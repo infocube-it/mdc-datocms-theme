@@ -30,9 +30,11 @@ services:
     command: npx playwright test
     # Chromium needs more shared memory than Docker's 64 MB default.
     shm_size: 1gb
+    # Serves the production build from `docker compose run --rm app npm run
+    # build`. Pass `-e BASE_URL=…` to test a running deploy instead.
     environment:
       HOME: /tmp
       npm_config_cache: /app/.npm-cache
-      BASE_URL: http://app:3000
+      NEXT_TELEMETRY_DISABLED: "1"
     volumes:
       - .:/app

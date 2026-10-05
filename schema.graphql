@@ -1,0 +1,43 @@
+schema {
+  query: Query
+}
+
+scalar BooleanType
+scalar CustomData
+scalar Date
+scalar DateTime
+scalar FloatType
+scalar IntType
+scalar ItemId
+scalar JsonField
+scalar MetaTagAttributes
+scalar UploadId
+
+enum SiteLocale {
+  it
+  en
+}
+
+type Site {
+  locales: [SiteLocale!]!
+}
+
+interface RecordInterface {
+  id: ItemId!
+}
+
+type PageRecord implements RecordInterface {
+  id: ItemId!
+  title(locale: SiteLocale, fallbackLocales: [SiteLocale!]): String!
+  slug(locale: SiteLocale, fallbackLocales: [SiteLocale!]): String!
+}
+
+type SiteSettingsRecord implements RecordInterface {
+  id: ItemId!
+  homePage: PageRecord!
+}
+
+type Query {
+  _site(locale: SiteLocale, fallbackLocales: [SiteLocale!]): Site!
+  siteSettings(locale: SiteLocale, fallbackLocales: [SiteLocale!]): SiteSettingsRecord
+}
