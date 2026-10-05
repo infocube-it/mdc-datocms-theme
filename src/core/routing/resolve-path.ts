@@ -31,15 +31,15 @@ type SiteLocale = ResultOf<typeof SiteLocalesQuery>['_site']['locales'][number];
 
 export type RoutableRecord = NonNullable<ResultOf<typeof HomePageQuery>['siteSettings']>['homePage'];
 
-export type RouteRequest = { locale: string; segments: string[] };
+export type PathRequest = { locale: string; segments: string[] };
 
-export type RouteResult = { kind: 'record'; record: RoutableRecord } | { kind: 'not-found' };
+export type PathResolution = { kind: 'record'; record: RoutableRecord } | { kind: 'not-found' };
 
 /** Turns a requested (locale, segments) pair into what the Site must answer. */
-export async function resolveRoute(
+export async function resolvePath(
   contentClient: ContentClient,
-  { locale, segments }: RouteRequest,
-): Promise<RouteResult> {
+  { locale, segments }: PathRequest,
+): Promise<PathResolution> {
   if (segments.length > 0) return { kind: 'not-found' };
 
   const { _site } = await contentClient.query(SiteLocalesQuery, {});
@@ -52,7 +52,7 @@ export async function resolveRoute(
 async function resolveHomePage(
   contentClient: ContentClient,
   locale: SiteLocale,
-): Promise<RouteResult> {
+): Promise<PathResolution> {
   const { siteSettings } = await contentClient.query(HomePageQuery, { locale });
   if (!siteSettings) return { kind: 'not-found' };
 

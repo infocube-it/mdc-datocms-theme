@@ -7,4 +7,4 @@ export { defineSiteConfig, type SiteConfig } from './config';
 export type { ContentClient } from './content/content-client';
 export { type Core, type CoreOptions, createCore } from './create-core';
 export { RecordView } from './record-view';
-export type { RoutableRecord, RouteRequest, RouteResult } from './routing/resolve-route';
+export type { RoutableRecord, PathRequest, PathResolution } from './routing/resolve-path';

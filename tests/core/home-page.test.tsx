@@ -7,7 +7,7 @@ const siteConfig = defineSiteConfig({});
 
 const homePageTitles: Record<string, string> = { it: 'Benvenuti', en: 'Welcome' };
 
-function fakeProject() {
+function fakeContentClient() {
   return createFakeContentClient({
     SiteLocales: () => ({ _site: { locales: ['it', 'en'] } }),
     HomePage: ({ locale }) => ({
@@ -19,8 +19,8 @@ function fakeProject() {
 }
 
 async function render(locale: string, segments: string[] = []) {
-  const core = createCore(siteConfig, { contentClient: fakeProject() });
-  const route = await core.resolveRoute({ locale, segments });
+  const core = createCore(siteConfig, { contentClient: fakeContentClient() });
+  const route = await core.resolvePath({ locale, segments });
   if (route.kind !== 'record') return route;
   return { kind: route.kind, html: renderToStaticMarkup(<RecordView record={route.record} />) };
 }
@@ -32,8 +32,8 @@ describe('the locale root', () => {
   });
 
   it('gives the Home page its title as document title', async () => {
-    const core = createCore(siteConfig, { contentClient: fakeProject() });
-    const route = await core.resolveRoute({ locale: 'it', segments: [] });
+    const core = createCore(siteConfig, { contentClient: fakeContentClient() });
+    const route = await core.resolvePath({ locale: 'it', segments: [] });
 
     expect(core.metadataFor(route)).toEqual({ title: 'Benvenuti' });
   });

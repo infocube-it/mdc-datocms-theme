@@ -1,4 +1,4 @@
-import type { RoutableRecord } from './routing/resolve-route';
+import type { RoutableRecord } from './routing/resolve-path';
 import { PageTemplate } from './templates/page-template';
 
 /** Renders a resolved record with the template of its model. */

@@ -29,7 +29,6 @@ export default async function (client: Client) {
     localized: true,
     validators: {
       required: {},
-      unique: {},
       slug_title_field: { title_field_id: pageTitle.id },
       slug_format: { predefined_pattern: 'webpage_slug' },
     },

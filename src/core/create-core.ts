@@ -3,12 +3,12 @@ import type { SiteConfig } from './config';
 import type { ContentClient } from './content/content-client';
 import { createDatoContentClient } from './content/dato-content-client';
 import { recordMetadata } from './metadata';
-import { type RouteRequest, type RouteResult, resolveRoute } from './routing/resolve-route';
+import { type PathRequest, type PathResolution, resolvePath } from './routing/resolve-path';
 
 export type Core = {
   readonly siteConfig: SiteConfig;
-  resolveRoute(request: RouteRequest): Promise<RouteResult>;
-  metadataFor(route: RouteResult): Metadata;
+  resolvePath(request: PathRequest): Promise<PathResolution>;
+  metadataFor(resolution: PathResolution): Metadata;
 };
 
 export type CoreOptions = {
@@ -21,7 +21,8 @@ export function createCore(siteConfig: SiteConfig, options: CoreOptions = {}): C
 
   return {
     siteConfig,
-    resolveRoute: (request) => resolveRoute(contentClient, request),
-    metadataFor: (route) => (route.kind === 'record' ? recordMetadata(route.record) : {}),
+    resolvePath: (request) => resolvePath(contentClient, request),
+    metadataFor: (resolution) =>
+      resolution.kind === 'record' ? recordMetadata(resolution.record) : {},
   };
 }

@@ -6,9 +6,10 @@ import { core } from '@/site/core';
 
 type Props = PageProps<'/[locale]/[[...slug]]'>;
 
-// Shared by `generateMetadata` and the page within one request.
+// Shared by `generateMetadata` and the page within one request. React `cache`
+// compares arguments by identity, so the segments travel as one string.
 const resolve = cache((locale: string, path: string) =>
-  core.resolveRoute({ locale, segments: path ? path.split('/') : [] }),
+  core.resolvePath({ locale, segments: path ? path.split('/') : [] }),
 );
 
 async function resolveFromParams(params: Props['params']) {
