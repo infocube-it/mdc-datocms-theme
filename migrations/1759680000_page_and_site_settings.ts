@@ -54,7 +54,7 @@ export default async function (client: Client) {
 
   const siteSettings = await client.itemTypes.create({
     name: 'Site settings',
-    api_key: 'site_settings',
+    api_key: 'site_setting',
     singleton: true,
     draft_mode_active: false,
   });

@@ -18,7 +18,8 @@ export default defineConfig({
     ? undefined
     : {
         command: 'npm run start -- --port 3100',
-        url: baseURL,
+        // Playwright waits for a 2xx–403 answer; `/` is a 404 until ticket 02.
+        url: `${baseURL}/it`,
         reuseExistingServer: false,
       },
 });

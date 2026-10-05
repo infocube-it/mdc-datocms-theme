@@ -11,7 +11,7 @@ function fakeContentClient() {
   return createFakeContentClient({
     SiteLocales: () => ({ _site: { locales: ['it', 'en'] } }),
     HomePage: ({ locale }) => ({
-      siteSettings: {
+      siteSetting: {
         homePage: { __typename: 'PageRecord', id: 'home', title: homePageTitles[locale as string] },
       },
     }),

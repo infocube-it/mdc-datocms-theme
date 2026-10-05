@@ -14,7 +14,7 @@ const SiteLocalesQuery = graphql(`
 const HomePageQuery = graphql(
   `
     query HomePage($locale: SiteLocale!) {
-      siteSettings(locale: $locale) {
+      siteSetting(locale: $locale) {
         homePage {
           __typename
           id
@@ -29,7 +29,7 @@ const HomePageQuery = graphql(
 
 type SiteLocale = ResultOf<typeof SiteLocalesQuery>['_site']['locales'][number];
 
-export type RoutableRecord = NonNullable<ResultOf<typeof HomePageQuery>['siteSettings']>['homePage'];
+export type RoutableRecord = NonNullable<ResultOf<typeof HomePageQuery>['siteSetting']>['homePage'];
 
 export type PathRequest = { locale: string; segments: string[] };
 
@@ -53,8 +53,8 @@ async function resolveHomePage(
   contentClient: ContentClient,
   locale: SiteLocale,
 ): Promise<PathResolution> {
-  const { siteSettings } = await contentClient.query(HomePageQuery, { locale });
-  if (!siteSettings) return { kind: 'not-found' };
+  const { siteSetting } = await contentClient.query(HomePageQuery, { locale });
+  if (!siteSetting) return { kind: 'not-found' };
 
-  return { kind: 'record', record: siteSettings.homePage };
+  return { kind: 'record', record: siteSetting.homePage };
 }
