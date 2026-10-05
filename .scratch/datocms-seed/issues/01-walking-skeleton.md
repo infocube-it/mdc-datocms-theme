@@ -18,11 +18,11 @@ See `spec.md` (Structure, Content client, Testing Decisions).
 **Status:** ready-for-agent
 
 - [ ] The app builds and deploys on Netlify; the production deploy reads from the DatoCMS primary environment.
-- [ ] Site code reaches the Core only through its public interface. No Site code imports Core internals.
-- [ ] Every DatoCMS read goes through the content client, with typed queries and a fragment per component.
-- [ ] A Site config object exists and the Core reads it (it can be nearly empty at this stage).
-- [ ] Migrations create Site settings (singleton, Home page link) and Page (title, localized slug, page-builder field) on the DatoCMS test project, and can be replayed.
-- [ ] `/it` (default locale) renders the Home page chosen in Site settings, server-rendered.
-- [ ] Vitest runs a Core test against a fake content client returning fixtures.
-- [ ] Playwright with axe runs against a build connected to the test project and passes on the Home page.
+- [x] Site code reaches the Core only through its public interface. No Site code imports Core internals.
+- [x] Every DatoCMS read goes through the content client, with typed queries and a fragment per component.
+- [x] A Site config object exists and the Core reads it (it can be nearly empty at this stage).
+- [x] Migrations create Site settings (singleton, Home page link) and Page (title, localized slug, page-builder field) on the DatoCMS test project, and can be replayed.
+- [x] `/it` (default locale) renders the Home page chosen in Site settings, server-rendered.
+- [x] Vitest runs a Core test against a fake content client returning fixtures.
+- [x] Playwright with axe runs against a build connected to the test project and passes on the Home page.
 - [ ] GitHub Actions runs Vitest and Playwright on every PR.
