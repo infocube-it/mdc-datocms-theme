@@ -240,6 +240,7 @@ Editors always see their latest drafts. **Visitors** get fast, static, server-re
   6. not found
 - Locales come from `_site.locales`; the first is the default. `/` → 302 to a matching browser language, else to the default locale.
 - A missing translation gives a 404 and excludes the record from sitemap and hreflang.
+- Top-level Pages are siblings of the Home page, never its children. A Page placed under the Home page still gets a Path under the Home page's slug (`/it/home/...`); fixing that misconfiguration is left to the Editor.
 - Redirects the resolver returns answer 308 (permanent) or 307 (temporary): Next.js page redirects can't send 301 or 302, and search engines treat them the same. `/` is a route handler, so it answers 302.
 - The Main page is used for breadcrumbs and BreadcrumbList, never for the Path.
 
