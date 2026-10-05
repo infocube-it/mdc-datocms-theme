@@ -15,9 +15,9 @@ See `spec.md` (Structure, Content client, Testing Decisions).
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] The app builds and deploys on Netlify; the production deploy reads from the DatoCMS primary environment.
+- [x] The app builds and deploys on Netlify; the production deploy reads from the DatoCMS primary environment.
 - [x] Site code reaches the Core only through its public interface. No Site code imports Core internals.
 - [x] Every DatoCMS read goes through the content client, with typed queries and a fragment per component.
 - [x] A Site config object exists and the Core reads it (it can be nearly empty at this stage).
@@ -26,3 +26,7 @@ See `spec.md` (Structure, Content client, Testing Decisions).
 - [x] Vitest runs a Core test against a fake content client returning fixtures.
 - [x] Playwright with axe runs against a build connected to the test project and passes on the Home page.
 - [x] GitHub Actions runs Vitest and Playwright on every PR.
+
+## Answer
+
+Implemented on `develop` (commits 3dfec51…0069959). Verified on 2026-10-05: Vitest and Playwright with axe pass locally and in GitHub Actions; the Netlify deploy (https://gentle-smakager-ed4469.netlify.app/it) serves the Home page server-rendered from the DatoCMS primary environment. `/` is still a 404 until ticket 02 adds the locale redirect.
