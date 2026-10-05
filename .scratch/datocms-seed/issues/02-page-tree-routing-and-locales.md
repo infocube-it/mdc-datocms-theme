@@ -15,12 +15,16 @@ See `spec.md` (Routing) and ADR-0001.
 
 **Blocked by:** 01 (Walking skeleton)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Locales are read from `_site.locales`; the first is the default; every URL is locale-prefixed.
-- [ ] A Page's Path is built from its ancestors' localized slugs, following DatoCMS hierarchical sorting, at any depth.
-- [ ] `/` answers 302 to the browser's preferred locale when available, else to the default locale.
-- [ ] A Page without a translation in the requested locale answers 404.
-- [ ] The Home page is served at `/<locale>`, and its own Path answers 301 to `/<locale>`.
-- [ ] An unknown Path answers 404.
-- [ ] Vitest (fake content client) covers nested Paths, missing translations, the Home page and unknown Paths. Playwright covers the redirects and a nested Page on the test project.
+- [x] Locales are read from `_site.locales`; the first is the default; every URL is locale-prefixed.
+- [x] A Page's Path is built from its ancestors' localized slugs, following DatoCMS hierarchical sorting, at any depth.
+- [x] `/` answers 302 to the browser's preferred locale when available, else to the default locale.
+- [x] A Page without a translation in the requested locale answers 404.
+- [x] The Home page is served at `/<locale>`, and its own Path answers 308 to `/<locale>` (Next.js can't send 301 from a page; agreed on 2026-10-05).
+- [x] An unknown Path answers 404.
+- [x] Vitest (fake content client) covers nested Paths, missing translations, the Home page and unknown Paths. Playwright covers the redirects and a nested Page on the test project.
+
+## Answer
+
+Implemented on `develop`. The Path builder is `src/core/routing/path-builder.ts`; the resolver loads the whole Page tree of a locale (in batches of 500) and matches the requested Path against it. Pages became a DatoCMS tree with optional translations (migration `1759770000_page_tree.ts`, which also seeds a nested sample tree). `/` is a route handler answering 302 with `Vary: Accept-Language`; the Home page's own Path answers 308, since Next.js page redirects can't send 301 (spec updated). Pages placed under the Home page get Paths under its slug (`/it/home/...`). Vitest (15) and Playwright (8) pass on 2026-10-05.

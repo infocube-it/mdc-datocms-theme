@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect, redirect } from 'next/navigation';
 import { cache } from 'react';
 import { RecordView } from '@/core';
 import { core } from '@/site/core';
@@ -22,8 +22,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CatchAllPage({ params }: Props) {
-  const route = await resolveFromParams(params);
-  if (route.kind === 'not-found') notFound();
+  const resolution = await resolveFromParams(params);
+  if (resolution.kind === 'not-found') notFound();
+  if (resolution.kind === 'redirect') {
+    // Next.js answers 308 and 307 here: redirects from a Next.js page can't send 301 or 302.
+    if (resolution.permanent) permanentRedirect(resolution.destination);
+    redirect(resolution.destination);
+  }
 
-  return <RecordView record={route.record} />;
+  return <RecordView record={resolution.record} />;
 }

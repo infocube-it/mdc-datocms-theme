@@ -233,13 +233,14 @@ Editors always see their latest drafts. **Visitors** get fast, static, server-re
   The resolver, links, sitemap, hreflang, preview links, breadcrumbs and llms.txt all use it.
 - Resolution order:
   1. manual Redirects
-  2. Home page Path → 301 to the locale root
+  2. Home page Path → permanent redirect to the locale root
   3. pagination suffix (localized word from Labels)
   4. Pages
   5. other Routable models, in the Site config order (first match wins)
   6. not found
 - Locales come from `_site.locales`; the first is the default. `/` → 302 to a matching browser language, else to the default locale.
 - A missing translation gives a 404 and excludes the record from sitemap and hreflang.
+- Redirects the resolver returns answer 308 (permanent) or 307 (temporary): Next.js page redirects can't send 301 or 302, and search engines treat them the same. `/` is a route handler, so it answers 302.
 - The Main page is used for breadcrumbs and BreadcrumbList, never for the Path.
 
 ### Cache and invalidation (ADR-0002)
@@ -375,7 +376,7 @@ Editors always see their latest drafts. **Visitors** get fast, static, server-re
 
 - **Good tests check external behaviour only**: what a Visitor, Editor, crawler or calling Site code can observe (HTTP responses, HTML, headers, generated files, adapter calls at the boundary). They don't check internal functions or component structure, so they survive refactors.
 - **Seam 1, the Site over HTTP (primary).** Playwright runs against a real build connected to the DatoCMS test project, both locally and on the Netlify deploy preview. It covers:
-  - status codes and redirects (`/` 302, Home page 301, manual Redirects, 404, 500)
+  - status codes and redirects (`/` 302, Home page 308, manual Redirects, 404, 500)
   - rendered HTML: Block hooks, alt text, `data-datocms-noindex`
   - `<head>`: canonical, hreflang, meta robots, JSON-LD
   - `X-Robots-Tag` outside production
