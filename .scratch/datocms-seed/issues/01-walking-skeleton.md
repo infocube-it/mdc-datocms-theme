@@ -25,4 +25,4 @@ See `spec.md` (Structure, Content client, Testing Decisions).
 - [x] `/it` (default locale) renders the Home page chosen in Site settings, server-rendered.
 - [x] Vitest runs a Core test against a fake content client returning fixtures.
 - [x] Playwright with axe runs against a build connected to the test project and passes on the Home page.
-- [ ] GitHub Actions runs Vitest and Playwright on every PR.
+- [x] GitHub Actions runs Vitest and Playwright on every PR.
