@@ -16,6 +16,8 @@ services:
     environment:
       NODE_OPTIONS: --max-old-space-size=4096
       CLAUDE_CONFIG_DIR: /home/node/.claude
+      # Telemetry hosts are not in the firewall allowlist; don't try to reach them.
+      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
     volumes:
       - ..:/workspace:cached
       - commandhistory:/commandhistory

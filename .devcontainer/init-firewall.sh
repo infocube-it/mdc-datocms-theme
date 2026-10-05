@@ -15,14 +15,16 @@ IFS=$'\n\t'
 ALLOWED_DOMAINS=(
   # npm
   "registry.npmjs.org"
-  # Claude Code
+  # Claude Code, per code.claude.com/docs/en/network-config. Datadog telemetry
+  # hosts are left out on purpose (telemetry is disabled in compose.yaml).
   "api.anthropic.com"
-  "console.anthropic.com"
-  "platform.claude.com"
   "claude.ai"
+  "claude.com"
+  "platform.claude.com"
   "mcp-proxy.anthropic.com"
-  "statsig.com"
-  "sentry.io"
+  "downloads.claude.ai"
+  "code.claude.com"
+  "raw.githubusercontent.com"
   # VS Code server and extensions
   "marketplace.visualstudio.com"
   "vscode.blob.core.windows.net"
