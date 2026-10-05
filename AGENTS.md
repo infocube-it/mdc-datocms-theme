@@ -1,6 +1,12 @@
 ## Development environment
 
-Work inside the devcontainer (`.devcontainer/`), never on the host. `DEVCONTAINER=true` is set inside it. Outbound network is allowlisted: if a download fails, the domain is probably not in `.devcontainer/init-firewall.sh`. Ask the user to add it rather than working around the firewall.
+Agents run on the host, but Node, npm, Next.js and Playwright run only in Docker, through `compose.yaml`. Never run `npm`, `npx` or `node` directly on the host. Examples:
+
+- `docker compose run --rm app npm install`
+- `docker compose up app` (dev server on http://localhost:3000)
+- `docker compose run --rm playwright`
+
+When you bump `@playwright/test`, update the `playwright` image tag in `compose.yaml` to the same version.
 
 ## Agent skills
 

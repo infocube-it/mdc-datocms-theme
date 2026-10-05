@@ -1,0 +1,38 @@
+# Development runtime. Node, npm and Playwright never run on the host: every
+# project command goes through these containers (see AGENTS.md).
+#
+#   docker compose run --rm app npm install      # one-off commands
+#   docker compose up app                        # Next.js dev server on http://localhost:3000
+#   docker compose run --rm playwright           # end-to-end tests
+#
+# Both services run as UID 1000 so files they write in the repo stay owned by
+# the host user. Never mount the Docker socket or host paths beyond the repo.
+services:
+  app:
+    image: node:24-bookworm
+    user: node
+    working_dir: /app
+    command: npm run dev -- --hostname 0.0.0.0
+    ports:
+      - 127.0.0.1:3000:3000
+    environment:
+      npm_config_cache: /app/.npm-cache
+      NEXT_TELEMETRY_DISABLED: "1"
+    volumes:
+      - .:/app
+
+  playwright:
+    # Keep the tag equal to the @playwright/test version in package.json.
+    image: mcr.microsoft.com/playwright:v1.63.0-noble
+    profiles: [test]
+    user: "1000:1000"
+    working_dir: /app
+    command: npx playwright test
+    # Chromium needs more shared memory than Docker's 64 MB default.
+    shm_size: 1gb
+    environment:
+      HOME: /tmp
+      npm_config_cache: /app/.npm-cache
+      BASE_URL: http://app:3000
+    volumes:
+      - .:/app
