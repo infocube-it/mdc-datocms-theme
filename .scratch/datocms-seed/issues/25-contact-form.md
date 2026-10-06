@@ -24,3 +24,4 @@ See `spec.md` (Contact form).
 - [ ] A delivery failure shows a clear error from Labels and is logged.
 - [ ] Playwright with axe covers success, field errors and failure, with JS disabled.
 - [ ] `block-coverage.md` is updated.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

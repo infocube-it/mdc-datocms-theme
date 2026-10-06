@@ -13,3 +13,4 @@ See `spec.md` (Contact form).
 - [ ] The server verifies the captcha only when the widget was available (consent given). Otherwise the baseline alone applies.
 - [ ] A fake implementation exists. One shared contract suite covers both.
 - [ ] Playwright checks there is no reCAPTCHA request before consent, and that the form still submits.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

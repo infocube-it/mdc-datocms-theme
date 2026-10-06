@@ -26,3 +26,4 @@ See `spec.md` (Rendering; Block markup stories).
 - [ ] A coverage test fails if any native Structured Text node, mark or field type has no renderer.
 - [ ] Rich text Block (migration and component). `block-coverage.md` is updated.
 - [ ] Playwright with axe covers a Page using Rich text.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

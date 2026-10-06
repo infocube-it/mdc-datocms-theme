@@ -19,3 +19,4 @@ See `spec.md` (SEO and indexing).
 - [ ] Each sitemap splits at 50,000 URLs and has `lastmod` from the record.
 - [ ] Sitemaps contain no hreflang, and no records missing in that locale.
 - [ ] Vitest covers the exclusion rule and splitting. Playwright fetches the sitemap index from the test project.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

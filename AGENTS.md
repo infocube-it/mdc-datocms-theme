@@ -8,6 +8,10 @@ Agents run on the host, but Node, npm, Next.js and Playwright run only in Docker
 
 When you bump `@playwright/test`, update the `playwright` image tag in `compose.yaml` to the same version.
 
+## New Sites
+
+`docs/new-site.md` is the manual for starting a Site from the Seed. When asked to set up a new Site, follow it step by step and stop at every **[human]** step. When a change adds a setup step (a token, secret, environment variable, webhook, external service or DatoCMS setting), update the manual in the same change.
+
 ## Agent skills
 
 ### Issue tracker

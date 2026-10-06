@@ -16,3 +16,4 @@ See `spec.md` (SEO and indexing).
 - [ ] BreadcrumbList matches the rendered breadcrumbs, built with the Path builder.
 - [ ] A per-model JSON-LD hook in Site config adds Site-specific types.
 - [ ] Playwright parses the JSON-LD on a Page and on a record.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

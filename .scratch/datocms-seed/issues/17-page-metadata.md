@@ -18,3 +18,4 @@ See `spec.md` (SEO and indexing).
 - [ ] hreflang lists only locales where the record exists.
 - [ ] `og:image:alt` and `article:modified_time` are present when data exists.
 - [ ] Vitest covers fallbacks and hreflang with missing translations. Playwright checks `<head>` on a Page and on a record.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

@@ -23,3 +23,4 @@ See `spec.md` (SEO and indexing).
   - robots.txt that disallows everyone except DatoCMS's crawler
   - `X-Robots-Tag: noindex` on every response
 - [ ] Vitest covers the generator for each context and each policy, plus the dropped lines.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

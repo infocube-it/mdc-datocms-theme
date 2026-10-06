@@ -12,3 +12,4 @@ See `spec.md` (SEO and indexing).
 - [ ] "Exclude from llms.txt only" removes a record from llms.txt and nowhere else.
 - [ ] When the Site config opt-in is on, each listed record has a Markdown version.
 - [ ] Vitest covers inclusion and exclusion. Playwright fetches llms.txt.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

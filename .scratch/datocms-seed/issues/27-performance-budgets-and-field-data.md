@@ -24,3 +24,4 @@ See `spec.md` (Consent, Labels, logging, performance).
 - [ ] `web-vitals` sends metrics to a Site endpoint, through the logging adapter by default, without cookies or personal data.
 - [ ] Fonts load via `next/font`. The first image-using Block can be marked as priority, with declared sizes.
 - [ ] Current templates pass the budgets.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

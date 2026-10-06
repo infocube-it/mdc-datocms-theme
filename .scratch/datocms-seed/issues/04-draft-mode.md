@@ -13,3 +13,4 @@ See `spec.md` (Rendering, preview and cache stories; Content client).
 - [ ] In draft mode, the content client reads draft content and bypasses the cache.
 - [ ] Outside draft mode, published content is served.
 - [ ] Playwright verifies that a draft change is visible in draft mode and not visible to a Visitor.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

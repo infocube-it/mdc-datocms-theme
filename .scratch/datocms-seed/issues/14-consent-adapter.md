@@ -13,3 +13,4 @@ See `spec.md` (Consent, Labels, logging, performance).
 - [ ] An in-memory or fake adapter exists for tests and for Sites with no tool yet. One shared contract suite covers it.
 - [ ] No concrete tool (Iubenda, ministry banner) is in the Core.
 - [ ] Playwright verifies that a declared script is absent before consent and present after.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

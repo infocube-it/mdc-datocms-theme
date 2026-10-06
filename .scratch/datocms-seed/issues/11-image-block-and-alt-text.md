@@ -17,3 +17,4 @@ See `spec.md` (Rendering; Images and accessibility stories).
 - [ ] The decorative/alt logic is shared, so every later image-using Block reuses it.
 - [ ] axe fails on a test page with a missing, non-decorative alt.
 - [ ] `block-coverage.md` is updated.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

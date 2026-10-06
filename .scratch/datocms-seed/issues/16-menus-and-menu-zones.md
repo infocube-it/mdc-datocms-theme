@@ -25,3 +25,4 @@ See `spec.md` (Navigation, Schema, Block markup).
 - [ ] Sites can add a zone with a new Site settings field and a layout slot, without changing the Core.
 - [ ] Header, footer, Menus, breadcrumb and the cookie banner slot carry `data-datocms-noindex`.
 - [ ] Playwright with axe covers keyboard navigation of a three-level Menu.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

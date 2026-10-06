@@ -13,3 +13,4 @@ See `spec.md` (Schema; Blocks stories) and `block-coverage.md`.
 - [ ] Both Blocks have migrations and the `dato-block` wrapper.
 - [ ] Playwright with axe covers both Blocks.
 - [ ] `block-coverage.md` is updated.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

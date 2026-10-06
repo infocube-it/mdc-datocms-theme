@@ -25,3 +25,4 @@ See `spec.md` (Search, SEO and indexing).
 - [ ] Pagination works within filtered results.
 - [ ] Playwright with axe covers unfiltered and filtered states.
 - [ ] `block-coverage.md` is updated.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

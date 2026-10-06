@@ -14,3 +14,4 @@ See `spec.md` (Schema; Blocks stories) and `block-coverage.md`.
 - [ ] The Gallery is keyboard-accessible if interactive. Its Client Component receives its data from the server.
 - [ ] Playwright with axe covers a Page with all four Blocks.
 - [ ] `block-coverage.md` is updated.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

@@ -17,3 +17,4 @@ See `spec.md` (Routing, Schema).
 - [ ] Redirects are checked before any other resolution step.
 - [ ] Permanent → 308, temporary → 307 (Next.js page redirects can't send 301 or 302; see `spec.md`, Routing). A record target uses the Path builder, so the redirect follows the record if it moves.
 - [ ] Vitest covers both types and both target kinds. Playwright covers one Redirect on the test project.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

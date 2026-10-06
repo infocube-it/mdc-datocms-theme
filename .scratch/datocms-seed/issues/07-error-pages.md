@@ -15,3 +15,4 @@ See `spec.md` (Routing).
 - [ ] If no 404 Page is set or it can't be fetched, a static fallback is rendered, still with status 404.
 - [ ] The 500 page is static, with text from Labels.
 - [ ] Playwright with axe covers the 404 page.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

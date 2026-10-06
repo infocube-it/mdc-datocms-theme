@@ -16,3 +16,4 @@ See `spec.md` (Rendering; Blocks stories).
 - [ ] After consent, the external embed loads. YouTube uses `youtube-nocookie`.
 - [ ] Playwright checks there are no third-party requests before consent. axe passes on both states.
 - [ ] `block-coverage.md` is updated.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

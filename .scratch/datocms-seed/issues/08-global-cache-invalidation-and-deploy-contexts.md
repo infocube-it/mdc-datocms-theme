@@ -17,3 +17,4 @@ See `spec.md` (Cache and invalidation) and ADR-0002.
 - [ ] The deploy context → DatoCMS environment mapping is applied, and previews never read production content.
 - [ ] The invalidation mode is a Site config setting, defaulting to `global`.
 - [ ] Vitest drives the webhook handler and asserts the recorded revalidation calls.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

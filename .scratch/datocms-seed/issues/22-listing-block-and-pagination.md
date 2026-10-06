@@ -26,3 +26,4 @@ See `spec.md` (Routing, SEO and indexing, Blocks).
 - [ ] Pagination is server-rendered and works without JS.
 - [ ] Vitest covers pagination resolution. Playwright with axe covers page 1 and page 2.
 - [ ] `block-coverage.md` is updated.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

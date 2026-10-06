@@ -19,3 +19,4 @@ See `spec.md` (Routing) and ADR-0001.
 - [ ] Path collisions across models resolve by the Site config model order.
 - [ ] Breadcrumbs render the Main page chain for records and the ancestor chain for Pages.
 - [ ] Vitest covers prefix, empty prefix, collisions and breadcrumbs. Playwright covers a sample record.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

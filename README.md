@@ -2,6 +2,8 @@
 
 The DatoCMS **Seed**: a Next.js 16 App Router codebase from which every Site is created. See `CONTEXT.md` for the vocabulary and `docs/adr/` for the main decisions.
 
+To start a new Site from the Seed, follow [`docs/new-site.md`](docs/new-site.md).
+
 ## Layout
 
 - `src/core/`: the **Core**, everything about DatoCMS. Its public interface is `src/core/index.ts` (and `src/core/testing/` for tests). Site code never imports other files from this folder; `tests/core/public-interface.test.ts` enforces it.

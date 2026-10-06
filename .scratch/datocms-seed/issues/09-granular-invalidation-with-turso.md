@@ -27,3 +27,4 @@ See `spec.md` (Cache and invalidation) and ADR-0002.
 - [ ] The index is wiped together with a full revalidation on code deploy, deploy rollback and DatoCMS environment promotion.
 - [ ] Each DatoCMS environment has its own index.
 - [ ] Vitest covers the granular, fallback and delayed-purge paths through the webhook handler.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.

@@ -28,3 +28,4 @@ See `spec.md` (Search) and `docs/research/datocms-site-search.md`.
 - [ ] A DatoCMS rate-limit response renders a friendly message from Labels and is logged.
 - [ ] The search form works without JS. Playwright with axe covers the search Page and its results.
 - [ ] `block-coverage.md` is updated.
+- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.
