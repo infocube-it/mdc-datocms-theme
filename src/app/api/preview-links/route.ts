@@ -19,13 +19,19 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Invalid secret' }, { status: 401, headers: corsHeaders });
   }
 
-  const { item, itemType } = (await request.json()) as {
-    item: { id: string };
-    itemType: { attributes: { api_key: string } };
-  };
+  const payload = (await request.json().catch(() => null)) as {
+    item?: { id?: string };
+    itemType?: { attributes?: { api_key?: string } };
+  } | null;
+  const itemId = payload?.item?.id;
+  const itemTypeApiKey = payload?.itemType?.attributes?.api_key;
+  if (!itemId || !itemTypeApiKey) {
+    return Response.json({ error: 'Invalid payload' }, { status: 400, headers: corsHeaders });
+  }
+
   const previewLinks = await core.previewLinks({
-    itemTypeApiKey: itemType.attributes.api_key,
-    itemId: item.id,
+    itemTypeApiKey,
+    itemId,
     origin,
     secret,
   });

@@ -33,7 +33,9 @@ export async function previewLinks(
   const links: PreviewLink[] = [];
   for (const locale of await loadSiteLocales(contentClient)) {
     const paths = pageTreePaths(locale, await loadPageTree(contentClient, locale));
-    const path = itemId === homePageId ? localeRootPath(locale) : paths.get(itemId);
+    // A translated Home page is served at the locale root, not at its own Path.
+    const treePath = paths.get(itemId);
+    const path = treePath && itemId === homePageId ? localeRootPath(locale) : treePath;
     if (!path) continue;
 
     const url = new URL('/api/draft/enable', origin);

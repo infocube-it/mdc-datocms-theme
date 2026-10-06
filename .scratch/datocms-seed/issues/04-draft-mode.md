@@ -26,4 +26,4 @@ Decisions taken while implementing:
 - the secret travels in the plugin URL and in each link, visible to Editors only;
 - the test project gets a sample Page with an unpublished draft (`migrations/1759860000_draft_sample_page.ts`), which the e2e tests read; Playwright loads `.env.local` for the secret.
 
-`docs/new-site.md` gains the secret in steps 3, 7 and 8 and a new step 9 for the plugin. `DRAFT_MODE_SECRET` must also be added to this repository's GitHub secrets for CI. Vitest (37) and Playwright (15) pass on 2026-10-06.
+`docs/new-site.md` gains the secret in steps 3, 7 and 8 and a new step 9 for the plugin. `DRAFT_MODE_SECRET` must also be added to this repository's GitHub secrets for CI. The test project's CDA token reads drafts too; its name (`…PUBLISHED_CONTENT…`) now undersells that, which the final review of change requests may revisit. The pages are already server-rendered on demand, so reading draft mode in the layout costs nothing yet; ticket 08 must keep it from defeating the cache. Vitest (38) and Playwright (15) pass on 2026-10-06.

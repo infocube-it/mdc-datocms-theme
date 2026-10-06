@@ -106,6 +106,21 @@ describe('preview links', () => {
     ]);
   });
 
+  it('skips locales the Home page is not translated into', async () => {
+    const contentClient = fakeSiteContentClient({
+      locales: ['it', 'en'],
+      homePageId: 'home',
+      pages: [{ id: 'home', slug: { it: 'home' }, title: {} }],
+    });
+    const links = await createCore(defineSiteConfig({}), { contentClient }).previewLinks({
+      itemTypeApiKey: 'page',
+      itemId: 'home',
+      origin: 'https://site.example',
+      secret: 's3cret',
+    });
+    expect(links).toEqual([{ label: 'Draft (it)', url: enableUrl('/it') }]);
+  });
+
   it('has none for models that are not Pages, or Pages that do not exist', async () => {
     expect(await previewLinks('consulting', 'article')).toEqual([]);
     expect(await previewLinks('missing')).toEqual([]);

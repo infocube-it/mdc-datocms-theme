@@ -29,4 +29,4 @@ docker compose run --rm app npm run build && docker compose run --rm playwright
 
 ## Deploy
 
-Netlify builds with `netlify.toml`. Set `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` in the Netlify site's environment variables; with no environment header, the deploy reads the DatoCMS primary environment. GitHub Actions (`.github/workflows/ci.yml`) runs typecheck, Vitest and Playwright on every PR and needs the same token as a repository secret.
+Netlify builds with `netlify.toml`. Set `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` and `DRAFT_MODE_SECRET` in the Netlify site's environment variables; with no environment header, the deploy reads the DatoCMS primary environment. GitHub Actions (`.github/workflows/ci.yml`) runs typecheck, Vitest and Playwright on every PR and needs the same two values as repository secrets.
