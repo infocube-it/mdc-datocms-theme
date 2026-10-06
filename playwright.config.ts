@@ -4,6 +4,13 @@ import { defineConfig, devices } from '@playwright/test';
 // Otherwise Playwright serves the local production build (`npm run build`).
 const baseURL = process.env.BASE_URL ?? 'http://localhost:3100';
 
+// Tests need the Site's secrets; the server started below reads `.env.local` itself.
+try {
+  process.loadEnvFile('.env.local');
+} catch {
+  // No file (e.g. in CI): the variables come from the environment.
+}
+
 export default defineConfig({
   testDir: './tests/e2e',
   forbidOnly: !!process.env.CI,

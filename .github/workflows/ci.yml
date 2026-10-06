@@ -30,6 +30,7 @@ jobs:
     env:
       HOME: /tmp
       DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN: ${{ secrets.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN }}
+      DRAFT_MODE_SECRET: ${{ secrets.DRAFT_MODE_SECRET }}
     steps:
       - uses: actions/checkout@v5
       - run: npm ci

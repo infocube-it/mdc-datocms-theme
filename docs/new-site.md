@@ -8,7 +8,7 @@ Follow these steps in order to turn a copy of the Seed into a new Site that buil
 
 Commands run from the repository root. Node, npm and Playwright run only in Docker (see `AGENTS.md`); never run them on the host.
 
-> This manual grows with the Seed: every ticket that adds a setup step (a token, a secret, a webhook, an external service) updates it. Last updated for ticket 03.
+> This manual grows with the Seed: every ticket that adds a setup step (a token, a secret, a webhook, an external service) updates it. Last updated for ticket 04.
 
 ## Before you start
 
@@ -56,7 +56,7 @@ git push origin develop   # if the Seed has a develop branch; it is the working 
 cp .env.local.example .env.local
 ```
 
-Paste the two tokens from step 2 into `.env.local`. The file is ignored by git: never commit it, and never paste tokens into chats, issues or logs.
+Paste the two tokens from step 2 into `.env.local`. Also set `DRAFT_MODE_SECRET` to a long random string, e.g. the output of `openssl rand -hex 24`: it protects draft mode and the preview links. The file is ignored by git: never commit it, and never paste tokens into chats, issues or logs.
 
 **Check:** `.env.local` has a value for every variable in `.env.local.example`.
 
@@ -74,7 +74,7 @@ They create:
 
 - the Page model, a tree with localized slugs;
 - the Site settings singleton;
-- sample Pages: a Home page, and a small tree under "Servizi / Services".
+- sample Pages: a Home page, a small tree under "Servizi / Services", and a Page with an unpublished draft, used to test draft mode.
 
 The Home page is required: Site settings must point to one. The other sample Pages are used by the Playwright tests (see step 8); delete them only once the Site has its own tests.
 
@@ -111,7 +111,7 @@ docker compose up app
 
 ## 7. Set up GitHub Actions [human]
 
-In the Site's repository, go to **Settings → Secrets and variables → Actions** and add the secret `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (the token from step 2).
+In the Site's repository, go to **Settings → Secrets and variables → Actions** and add two secrets: `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (the token from step 2) and `DRAFT_MODE_SECRET` (the value in `.env.local`).
 
 The workflow `.github/workflows/ci.yml` runs on every PR and on pushes to `main` and `develop`. It runs typecheck and Vitest, then builds the Site and runs Playwright with axe against the build.
 
@@ -120,7 +120,7 @@ The workflow `.github/workflows/ci.yml` runs on every PR and on pushes to `main`
 ## 8. Deploy on Netlify [human]
 
 1. In Netlify, **Add new project → Import an existing project**, and pick the Site's repository. Netlify reads the build settings from `netlify.toml`: don't override them.
-2. In **Project configuration → Environment variables**, add `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`.
+2. In **Project configuration → Environment variables**, add `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` and `DRAFT_MODE_SECRET` (the value in `.env.local`).
 3. Choose the production branch, `main` or `develop`.
 4. Trigger a deploy.
 
@@ -138,6 +138,16 @@ docker compose run --rm -e BASE_URL=https://<deploy-url> playwright
 ```
 
 If the Netlify project is password-protected, make it public first, or Playwright gets 401s.
+
+## 9. Connect the DatoCMS Web Previews plugin [human]
+
+Editors open the Site in draft mode from DatoCMS with the Web Previews plugin.
+
+1. In DatoCMS, **Settings → Plugins → Add**, install **Web Previews**.
+2. In the plugin's settings, set **Frontends** with a name (e.g. `Production`) and the **Preview links generator URL**: `https://<deploy-url>/api/preview-links?secret=<DRAFT_MODE_SECRET>`. Use the Site's real domain once it has one.
+3. Save.
+
+**Check:** open a Page record in DatoCMS: the sidebar shows "Draft (<locale>)" links, one per translated locale. Following one opens the Site on that Page with a link to exit draft mode, showing the latest draft. Following the exit link goes back to published content.
 
 ## Ready
 

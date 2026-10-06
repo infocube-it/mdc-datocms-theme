@@ -5,6 +5,9 @@
 import type { ContentClient } from '../content/content-client';
 import { type LogEvent, type Logger, plainEvent } from '../logging/logger';
 
+// Exposed so tests can replace the HTTP transport and see what the Core sends to DatoCMS.
+export { createDatoContentClient } from '../content/dato-content-client';
+
 /** A logger that keeps every event in memory, for tests to read back. */
 export function createMemoryLogger(): Logger & { readonly events: LogEvent[] } {
   const events: LogEvent[] = [];

@@ -7,7 +7,7 @@ import { pageTreePaths, pathFromSegments } from './path-builder';
 import { type Redirect, redirectToLocaleRoot } from './redirect';
 import { loadSiteLocales, type SiteLocale } from './site-locales';
 
-const HomePageIdQuery = graphql(`
+export const HomePageIdQuery = graphql(`
   query HomePageId {
     siteSetting {
       homePage {
