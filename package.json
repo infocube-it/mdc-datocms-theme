@@ -13,6 +13,7 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:deploy": "dotenv -c -- bash -c 'BASE_URL=\"${DEPLOY_URL:?Set DEPLOY_URL in .env.local}\" playwright test'",
     "generate-schema": "dotenv -c -- bash -c 'gql.tada generate schema https://graphql.datocms.com --header \"X-Exclude-Invalid: true\" --header \"Authorization: $DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN\" && gql.tada generate output'",
     "migrations:new": "dotenv -c -- bash -c 'datocms migrations:new --ts --api-token=\"$DATOCMS_CMA_TOKEN\" \"$@\"' --",
     "migrations:run": "dotenv -c -- bash -c 'datocms migrations:run --api-token=\"$DATOCMS_CMA_TOKEN\" \"$@\"' --"

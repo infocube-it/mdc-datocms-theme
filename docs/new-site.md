@@ -131,10 +131,10 @@ With no environment header, the deploy reads the DatoCMS primary environment.
 - The deploy URL's `/` redirects to the default locale.
 - `/<default-locale>` shows the Home page.
 
-Then run the end-to-end tests against the deploy [agent]:
+Then set `DEPLOY_URL` in `.env.local` to the Site's Netlify URL, without a path (e.g. `https://my-site.netlify.app`), and run the end-to-end tests against the deploy [agent]:
 
 ```sh
-docker compose run --rm -e BASE_URL=https://<deploy-url> playwright
+docker compose run --rm playwright npm run test:e2e:deploy
 ```
 
 If the Netlify project is password-protected, make it public first, or Playwright gets 401s.
