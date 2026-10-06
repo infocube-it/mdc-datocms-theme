@@ -25,7 +25,7 @@ See `spec.md` (Consent, Labels, logging, performance).
 
 Implemented on `develop`. The logging adapter is `Logger` (`log({ severity, message, context })`); `createNetlifyLogger` writes one JSON line per event to the server console, which Netlify collects, and `SiteConfig.logger` replaces it. `createMemoryLogger` (in `@/core/testing`) is the fake; `tests/core/logger-contract.test.ts` runs the same suite against both. Loggers never throw: an unserializable context is replaced.
 
-Labels live in `src/core/labels/seed/<locale>.ts`, merged with `SiteConfig.labels` (a Site override wins, and can add keys); the Site reads them with `core.labelsFor(locale)`. Decisions taken while implementing:
+Labels live in `src/core/labels/seed/<locale>.ts`, merged with the Site's own per-locale files in `src/site/labels/<locale>.ts`, passed as `SiteConfig.labels` (a Site override wins, and can add keys); the Site reads them with `core.labelsFor(locale)`. Decisions taken while implementing:
 - each missing locale or Label is logged once per server process, not on every request;
 - a Label missing in the default locale too shows its key and logs an error;
 - a locale the Site doesn't offer (a 404 anyway) gets default-locale Labels without a warning, so bots don't flood the logs.
