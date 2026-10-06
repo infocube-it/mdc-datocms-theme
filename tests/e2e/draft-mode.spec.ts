@@ -18,7 +18,7 @@ test.describe('draft mode', () => {
     browser,
   }) => {
     await page.goto(enableUrl());
-    await expect(page).toHaveURL(new RegExp(`${path}$`));
+    await expect(page).toHaveURL(new RegExp(`${path}$`)); // no secret left in it
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(draft);
 
     const visitor = await browser.newPage();
@@ -36,16 +36,17 @@ test.describe('draft mode', () => {
     await expect(page.getByRole('link', { name: 'Exit draft mode' })).toHaveCount(0);
   });
 
-  test('refuses a wrong secret, and never redirects off the Site', async ({ request }) => {
+  test('refuses a wrong secret', async ({ request }) => {
     const wrong = await request.get(enableUrl('wrong'), { maxRedirects: 0 });
     expect(wrong.status()).toBe(401);
+  });
 
-    const offSite = await request.get(
+  test('never sends the Editor off the Site, nor leaves the secret in the URL', async ({ page, baseURL }) => {
+    await page.goto(
       `/api/draft/enable?secret=${encodeURIComponent(secret)}&path=${encodeURIComponent('//evil.example')}`,
-      { maxRedirects: 0 },
     );
-    expect(new URL(offSite.headers().location, 'http://site.invalid').pathname).toBe('/');
-    expect(offSite.headers().location).not.toContain('secret');
+    // The Site root, then the browser's locale.
+    await expect(page).toHaveURL(new RegExp(`^${baseURL}/(it|en)$`));
   });
 });
 
