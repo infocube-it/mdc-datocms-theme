@@ -1,5 +1,4 @@
 import { draftMode } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { core } from '@/site/core';
 
 /** Entered from the DatoCMS Web Previews plugin: `?secret=…&path=/it/some-page`. */
@@ -12,5 +11,6 @@ export async function GET(request: Request) {
   if (target === null) return new Response('Invalid secret', { status: 401 });
 
   (await draftMode()).enable();
-  redirect(target);
+  // Not `redirect()`: on Netlify it appends the request's query string, and with it the secret, to the new URL.
+  return new Response(null, { status: 307, headers: { Location: target } });
 }
