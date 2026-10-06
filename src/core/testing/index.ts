@@ -3,6 +3,18 @@
  * production code.
  */
 import type { ContentClient } from '../content/content-client';
+import { type LogEvent, type Logger, plainEvent } from '../logging/logger';
+
+/** A logger that keeps every event in memory, for tests to read back. */
+export function createMemoryLogger(): Logger & { readonly events: LogEvent[] } {
+  const events: LogEvent[] = [];
+  return {
+    events,
+    log(event) {
+      events.push(plainEvent(event));
+    },
+  };
+}
 
 /** Returns the fixture response data for one query, given its variables. */
 export type Fixture = (variables: Record<string, unknown>) => unknown;
