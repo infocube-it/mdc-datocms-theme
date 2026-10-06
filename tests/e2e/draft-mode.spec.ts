@@ -44,7 +44,8 @@ test.describe('draft mode', () => {
       `/api/draft/enable?secret=${encodeURIComponent(secret)}&path=${encodeURIComponent('//evil.example')}`,
       { maxRedirects: 0 },
     );
-    expect(offSite.headers().location).toBe('/');
+    expect(new URL(offSite.headers().location, 'http://site.invalid').pathname).toBe('/');
+    expect(offSite.headers().location).not.toContain('secret');
   });
 });
 

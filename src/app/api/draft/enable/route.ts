@@ -11,6 +11,7 @@ export async function GET(request: Request) {
   if (target === null) return new Response('Invalid secret', { status: 401 });
 
   (await draftMode()).enable();
-  // Not `redirect()`: on Netlify it appends the request's query string, and with it the secret, to the new URL.
-  return new Response(null, { status: 307, headers: { Location: target } });
+  // An absolute Location: Netlify appends the request's query string, and with
+  // it the secret, to a relative one (`redirect()` sends a relative one too).
+  return Response.redirect(new URL(target, request.url), 307);
 }
