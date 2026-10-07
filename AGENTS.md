@@ -1,12 +1,16 @@
 ## Development environment
 
-Agents run on the host, but Node, npm, Next.js and Playwright run only in Docker, through `compose.yaml`. Never run `npm`, `npx` or `node` directly on the host. Examples:
+Node, npm, Next.js and Playwright never run on the host. There are two ways to run them:
 
-- `docker compose run --rm app npm install`
-- `docker compose up app` (dev server on http://localhost:3000)
-- `docker compose run --rm playwright`
+- **In the Dev Container** (`.devcontainer/`, the environment variable `DEVCONTAINER` is `true`): the agent runs inside it too, and runs `npm`, `npx` and `node` directly, e.g. `npm install`, `npm run dev`, `npm run test:e2e`. `git push` doesn't work there: the person pushes from the host.
+- **On the host**, through `compose.yaml`. Never run `npm`, `npx` or `node` directly on the host. Examples:
+  - `docker compose run --rm app npm install`
+  - `docker compose up app` (dev server on http://localhost:3000)
+  - `docker compose run --rm playwright`
 
-When you bump `@playwright/test`, update the `playwright` image tag in `compose.yaml` to the same version.
+The manuals write commands in the `docker compose` form; in the Dev Container drop the `docker compose run --rm app` prefix, and run `npm run test:e2e` for `docker compose run --rm playwright`.
+
+When you bump `@playwright/test`, update the Playwright image tag to the same version in `compose.yaml`, `.devcontainer/Dockerfile` and `.github/workflows/ci.yml`.
 
 ## New Sites
 

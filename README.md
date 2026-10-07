@@ -15,7 +15,7 @@ To start a new Site from the Seed, follow [`docs/new-site.md`](docs/new-site.md)
 
 ## Development
 
-Node tooling runs only in Docker (see `AGENTS.md`). Copy `.env.local.example` to `.env.local` and fill in the DatoCMS test project tokens, then:
+Node tooling runs only in containers (see `AGENTS.md`): either in the Dev Container (see `.devcontainer/README.md`), where you run the `npm` commands below without the `docker compose run --rm app` prefix, or through Docker Compose on the host. Copy `.env.local.example` to `.env.local` and fill in the DatoCMS test project tokens, then:
 
 ```sh
 docker compose run --rm app npm install

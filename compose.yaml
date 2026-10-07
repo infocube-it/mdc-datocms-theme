@@ -1,4 +1,5 @@
-# Development runtime. Node, npm and Playwright never run on the host: every
+# Development runtime on the host, the alternative to the Dev Container
+# (.devcontainer/). Node, npm and Playwright never run on the host: every
 # project command goes through these containers (see AGENTS.md).
 #
 #   docker compose run --rm app npm install      # one-off commands

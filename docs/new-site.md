@@ -6,7 +6,7 @@ Follow these steps in order to turn a copy of the Seed into a new Site that buil
 - Steps marked **[agent]** are plain commands; a person can run them too.
 - Each step ends with a **Check**. Don't move on until it passes.
 
-Commands run from the repository root. Node, npm and Playwright run only in Docker (see `AGENTS.md`); never run them on the host.
+Commands run from the repository root. Node, npm and Playwright run only in containers (see `AGENTS.md`); never run them on the host. The commands below use Docker Compose; in the Dev Container drop the `docker compose run --rm app` prefix, and run `npm run test:e2e:deploy` directly in step 8.
 
 > This manual grows with the Seed: every ticket that adds a setup step (a token, a secret, a webhook, an external service) updates it. Last updated for ticket 04.
 
@@ -15,6 +15,7 @@ Commands run from the repository root. Node, npm and Playwright run only in Dock
 You need:
 
 - Git and Docker with Docker Compose, on a host where your user has UID 1000. The containers write files as UID 1000.
+- Optional, to work in the Dev Container (where a coding agent runs without permission prompts): VS Code with the Dev Containers extension, and a Claude Code token saved as `.devcontainer/README.md` explains **[human]**.
 - A DatoCMS account that can create projects.
 - A GitHub account or organization for the Site's repository.
 - A Netlify account linked to GitHub.

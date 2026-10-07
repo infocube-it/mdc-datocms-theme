@@ -1,0 +1,54 @@
+// Dev Container: the whole dev runtime (Node, Next.js, Playwright, Claude Code)
+// in one container, so the agent can work without permission prompts while the
+// host stays out of reach. See .devcontainer/README.md.
+{
+  "name": "MDC DatoCMS Seed",
+  "build": { "dockerfile": "Dockerfile" },
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
+  },
+  "remoteUser": "ubuntu",
+  "updateRemoteUserUID": true,
+
+  // Same path as on the host, so Claude Code derives the same project folder
+  // name and finds the shared memory.
+  "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+  "workspaceFolder": "${localWorkspaceFolder}",
+
+  // On the host: creates the token file and links this project's Claude memory
+  // into .devcontainer/.claude-memory (git-ignored).
+  "initializeCommand": "bash .devcontainer/host-init.sh",
+  "runArgs": [
+    "--env-file", "${localEnv:HOME}/.claude/devcontainer.env",
+    // Chromium needs more shared memory than Docker's 64 MB default.
+    "--shm-size=1gb",
+    "--init"
+  ],
+  "mounts": [
+    // Claude Code settings, login and transcripts survive container rebuilds.
+    "source=claude-home-${devcontainerId},target=/home/ubuntu/.claude,type=volume",
+    // The only host folder mounted besides the repository.
+    "source=${localWorkspaceFolder}/.devcontainer/.claude-memory,target=/mnt/claude-memory,type=bind"
+  ],
+  "containerEnv": {
+    "DEVCONTAINER": "true",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "npm_config_cache": "${containerWorkspaceFolder}/.npm-cache"
+  },
+  "remoteEnv": {
+    // No host SSH agent: git push only works from the host.
+    "SSH_AUTH_SOCK": ""
+  },
+  "postStartCommand": "bash .devcontainer/container-init.sh",
+  "forwardPorts": [3000],
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "bradlc.vscode-tailwindcss",
+        "ms-playwright.playwright"
+      ]
+    }
+  }
+}

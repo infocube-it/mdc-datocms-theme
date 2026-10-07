@@ -26,3 +26,6 @@ next-env.d.ts
 *.pem
 
 .idea/
+
+# dev container: link to the host's Claude memory
+/.devcontainer/.claude-memory
