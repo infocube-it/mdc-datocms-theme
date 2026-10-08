@@ -4,7 +4,7 @@
 
 The manual has grown with every ticket since 03. This ticket proves it works: someone follows it from a clean start and fixes whatever is missing, wrong or out of order.
 
-**Blocked by:** 01–27 (every other ticket of this version)
+**Blocked by:** 01–27, 29 (every other ticket of this version)
 
 **Status:** ready-for-agent
 
