@@ -48,8 +48,14 @@ git push origin develop   # if the Seed has a develop branch; it is the working 
 3. In **Project settings → API tokens**, create two tokens:
    - a **Content Delivery API** token with read-only access to published content. This is `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`.
    - a **Content Management API** token whose role can edit the schema (Admin). This is `DATOCMS_CMA_TOKEN`. It is used only on developer machines, for migrations; never put it in Netlify or GitHub.
+4. If you work in the Dev Container, or let a coding agent run migrations, create a **sandbox-only** role and a Content Management API token with it. Use this token as `DATOCMS_CMA_TOKEN` in the Dev Container, instead of the Admin one: it can't touch primary. In **Project settings → Roles**, create a role with:
+   - **Environments**: sandbox environments only.
+   - **Can edit schema** and **Can manage environments** (create and fork sandboxes): on.
+   - **Can promote environments**: off. A person promotes a sandbox from the dashboard.
+   - **Can manage access tokens**: off. With it, the token can read every token in the project, the Admin one included.
+   - **Records**: one rule per sandbox, with that sandbox as environment, all models and all actions. DatoCMS scopes each record rule to a single environment: a rule on `main` doesn't reach the sandboxes, and a new sandbox needs its own rule before migrations can read or write its records. Without it, `migrations:run` sees no applied migrations and starts again from the first.
 
-**Check:** the project has the locales in the right order, and both tokens exist.
+**Check:** the project has the locales in the right order, and the tokens exist.
 
 ## 3. Configure local secrets [human]
 
