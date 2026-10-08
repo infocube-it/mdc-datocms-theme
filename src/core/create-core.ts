@@ -1,4 +1,10 @@
 import type { Metadata } from 'next';
+import { revalidateTag as nextRevalidateTag } from 'next/cache';
+import {
+  type CacheInvalidation,
+  type CacheInvalidationOptions,
+  createCacheInvalidation,
+} from './cache/invalidation';
 import type { SiteConfig } from './config';
 import type { ContentClient } from './content/content-client';
 import { createDatoContentClient } from './content/dato-content-client';
@@ -30,11 +36,24 @@ export type Core = {
   isDraftModeSecret(secret: string | null): boolean;
   /** The links the DatoCMS Web Previews plugin shows for a record. */
   previewLinks(request: PreviewLinksRequest): Promise<PreviewLink[]>;
+  /**
+   * The webhook DatoCMS calls with `cda_cache_tags` after a publish. Needs
+   * `Authorization: Bearer <CACHE_WEBHOOK_SECRET>`.
+   */
+  handleCacheTagsWebhook: CacheInvalidation['handleCacheTagsWebhook'];
+  /**
+   * Revalidates the whole cache. Called by a Netlify deploy notification
+   * (signed with `CACHE_WEBHOOK_SECRET`) after a code deploy or a rollback, or
+   * by hand with the bearer secret.
+   */
+  handleCacheFlush: CacheInvalidation['handleCacheFlush'];
 };
 
 export type CoreOptions = {
   /** Replaces the DatoCMS content client, e.g. with a fake in tests. */
   contentClient?: ContentClient;
+  /** Replaces Next.js's `revalidateTag`, e.g. with a recorder in tests. */
+  revalidateTag?: CacheInvalidationOptions['revalidateTag'];
 };
 
 export function createCore(siteConfig: SiteConfig, options: CoreOptions = {}): Core {
@@ -44,6 +63,10 @@ export function createCore(siteConfig: SiteConfig, options: CoreOptions = {}): C
   const draftContentClient =
     options.contentClient ?? createDatoContentClient({ draftMode: async () => true });
   const logger = siteConfig.logger ?? createNetlifyLogger();
+  const invalidation = createCacheInvalidation({
+    logger,
+    revalidateTag: options.revalidateTag ?? nextRevalidateTag,
+  });
   const reportedLabelProblems = new Set<string>();
 
   return {
@@ -61,5 +84,6 @@ export function createCore(siteConfig: SiteConfig, options: CoreOptions = {}): C
       isDraftModeSecret(secret) ? pathOnThisSite(path) : null,
     isDraftModeSecret,
     previewLinks: (request) => previewLinks(draftContentClient, request),
+    ...invalidation,
   };
 }

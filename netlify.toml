@@ -8,3 +8,15 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Each deploy context reads its own DatoCMS environment. Production sets none,
+# so it reads primary: a preview can never show or cache production content.
+[context.deploy-preview.environment]
+  DATOCMS_ENVIRONMENT = "sandbox"
+
+[context.branch-deploy.environment]
+  DATOCMS_ENVIRONMENT = "sandbox"
+
+# Staging: the `develop` branch deploy reads the long-lived `develop` sandbox.
+[context.develop.environment]
+  DATOCMS_ENVIRONMENT = "develop"

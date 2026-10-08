@@ -1,6 +1,7 @@
 import 'server-only';
 import { executeQuery } from '@datocms/cda-client';
 import { draftMode } from 'next/headers';
+import { GLOBAL_TAG } from '../cache/invalidation';
 import type { ContentClient } from './content-client';
 
 export type DatoContentClientOptions = {
@@ -11,9 +12,10 @@ export type DatoContentClientOptions = {
 };
 
 /**
- * Content client backed by the DatoCMS Content Delivery API, reading the
- * project's primary environment. It reads published content, or the latest
- * drafts, never cached, in draft mode.
+ * Content client backed by the DatoCMS Content Delivery API. It reads the
+ * environment named by `DATOCMS_ENVIRONMENT`, or primary when unset, and
+ * published content, cached under the global tag until a webhook revalidates
+ * it, or the latest drafts, never cached, in draft mode.
  *
  * `excludeInvalid` narrows the generated types: fields with a Required
  * validation are non-null, so `schema.graphql` must be downloaded with the
@@ -30,10 +32,14 @@ export function createDatoContentClient({
         variables,
         excludeInvalid: true,
         token: requiredEnv('DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN'),
+        // Written out in full so Next.js can inline it at build time: Netlify
+        // keeps `netlify.toml` variables out of the runtime.
+        environment: process.env.DATOCMS_ENVIRONMENT || undefined,
         includeDrafts,
         fetchFn: includeDrafts
           ? (input, init) => fetch(input, { ...init, cache: 'no-store' })
-          : undefined,
+          : (input, init) =>
+              fetch(input, { ...init, cache: 'force-cache', next: { tags: [GLOBAL_TAG] } }),
       });
     },
   };

@@ -8,6 +8,12 @@ import type { RoutableModel } from './routing/routable-model';
  * Routable model order, adapters…).
  */
 export type SiteConfig = {
+  /**
+   * How a publish refreshes the cache. `global` (the default) revalidates
+   * every page on each publish; pages keep serving their previous version
+   * while they regenerate.
+   */
+  invalidationMode?: 'global';
   /** Replaces the default logger, which writes to Netlify logs. */
   logger?: Logger;
   /** The Site's own Labels by locale: they extend the Seed's and win over them. */

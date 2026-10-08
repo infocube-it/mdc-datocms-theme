@@ -8,7 +8,7 @@ Follow these steps in order to turn a copy of the Seed into a new Site that buil
 
 Commands run from the repository root. Node, npm and Playwright run only in containers (see `AGENTS.md`); never run them on the host. The commands below use Docker Compose; in the Dev Container drop the `docker compose run --rm app` prefix, and run `npm run test:e2e:deploy` directly in step 8.
 
-> This manual grows with the Seed: every ticket that adds a setup step (a token, a secret, a webhook, an external service) updates it. Last updated for ticket 05.
+> This manual grows with the Seed: every ticket that adds a setup step (a token, a secret, a webhook, an external service) updates it. Last updated for ticket 08.
 
 ## Before you start
 
@@ -63,9 +63,9 @@ git push origin develop   # if the Seed has a develop branch; it is the working 
 cp .env.local.example .env.local
 ```
 
-Paste the two tokens from step 2 into `.env.local`. Also set `DRAFT_MODE_SECRET` to a long random string, e.g. the output of `openssl rand -hex 24`: it protects draft mode and the preview links. The file is ignored by git: never commit it, and never paste tokens into chats, issues or logs.
+Paste the two tokens from step 2 into `.env.local`. Also set `DRAFT_MODE_SECRET` and `CACHE_WEBHOOK_SECRET` to long random strings, e.g. the output of `openssl rand -hex 24`: the first protects draft mode and the preview links, the second the cache invalidation endpoints (step 10). Leave `DATOCMS_ENVIRONMENT` empty: the Site then reads primary. The file is ignored by git: never commit it, and never paste tokens into chats, issues or logs.
 
-**Check:** `.env.local` has a value for every variable in `.env.local.example`.
+**Check:** `.env.local` has a value for every variable in `.env.local.example`, except `DATOCMS_ENVIRONMENT`.
 
 ## 4. Install and set up the DatoCMS schema [agent]
 
@@ -121,7 +121,7 @@ docker compose up app
 
 ## 7. Set up GitHub Actions [human]
 
-In the Site's repository, go to **Settings → Secrets and variables → Actions** and add two secrets: `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (the token from step 2) and `DRAFT_MODE_SECRET` (the value in `.env.local`).
+In the Site's repository, go to **Settings → Secrets and variables → Actions** and add two secrets: `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (the token from step 2) and `DRAFT_MODE_SECRET` (the value in `.env.local`). CI reads primary and never calls the cache endpoints.
 
 The workflow `.github/workflows/ci.yml` runs on every PR and on pushes to `main` and `develop`. It runs typecheck and Vitest, then builds the Site and runs Playwright with axe against the build.
 
@@ -130,11 +130,11 @@ The workflow `.github/workflows/ci.yml` runs on every PR and on pushes to `main`
 ## 8. Deploy on Netlify [human]
 
 1. In Netlify, **Add new project → Import an existing project**, and pick the Site's repository. Netlify reads the build settings from `netlify.toml`: don't override them.
-2. In **Project configuration → Environment variables**, add `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` and `DRAFT_MODE_SECRET` (the value in `.env.local`).
+2. In **Project configuration → Environment variables**, add `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`, `DRAFT_MODE_SECRET` and `CACHE_WEBHOOK_SECRET` (the values in `.env.local`).
 3. Choose the production branch, `main` or `develop`.
 4. Trigger a deploy.
 
-With no environment header, the deploy reads the DatoCMS primary environment.
+`netlify.toml` maps each deploy context to a DatoCMS environment: production reads primary, deploy previews and branch deploys read a sandbox called `sandbox`, and the `develop` branch deploy (staging) reads a sandbox called `develop` (step 11). Create the `sandbox` environment before opening a pull request, or previews fail: in DatoCMS, **Project settings → Environments → Fork primary**. A preview never reads or caches production content.
 
 **Check:**
 
@@ -158,6 +158,42 @@ Editors open the Site in draft mode from DatoCMS with the Web Previews plugin.
 3. Save.
 
 **Check:** open a Page record in DatoCMS: the sidebar shows "Draft (<locale>)" links, one per translated locale. Following one opens the Site on that Page with a link to exit draft mode, showing the latest draft. Following the exit link goes back to published content.
+
+## 10. Connect cache invalidation [human]
+
+Pages are cached until DatoCMS tells the Site that content changed. After a publish the first Visitor still gets the previous version while the page regenerates; the next one gets the new version.
+
+1. **DatoCMS webhook.** In **Project settings → Webhooks → Add**:
+   - URL: `https://<deploy-url>/api/cache/datocms`
+   - **HTTP basic auth**: off. **Custom headers**: `Authorization` = `Bearer <CACHE_WEBHOOK_SECRET>`.
+   - **Events**: entity **Cache tags**, event **Invalidate**. Leave auto-retry on.
+2. **Netlify deploy notifications.** After a code deploy, or when someone rolls back to an older deploy (which brings back that deploy's old cache), the whole cache must be revalidated. In **Project configuration → Notifications → Deploy notifications → Add notification → Outgoing webhook**, add one for each of the events **Deploy succeeded** and **Deploy restored**, with:
+   - URL: `https://<deploy-url>/api/cache/flush`
+   - **JWS secret token**: `<CACHE_WEBHOOK_SECRET>`.
+
+**Check:** publish a change to the Home page in DatoCMS. Reload `/<default-locale>` twice: the second load shows the change. In DatoCMS, the webhook's activity log shows a `200`. A request without the secret gets `401`:
+
+```sh
+curl -i -X POST https://<deploy-url>/api/cache/datocms
+```
+
+## 11. Set up staging (the `develop` sandbox) [human]
+
+Staging is the Netlify deploy of the `develop` branch. It reads a long-lived sandbox called `develop`, so new code and schema can be shown to the client without touching production. Content written in the sandbox never goes back to primary (promoting a sandbox replaces primary whole): use staging for new code and schema, not for preparing content.
+
+1. **Create the sandbox.** In DatoCMS, **Project settings → Environments → Fork primary**, name it `develop`.
+2. **Give the tokens access.** In **Project settings → Roles**, make the role of the Content Delivery API token (`DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`) able to read the `develop` and `sandbox` environments (a role's environment access is per environment). Without it, staging and previews get 401s. For the sandbox-only role of step 2, add a **Records** rule for each of them as well.
+3. **Netlify.** In **Project configuration → Build & deploy → Branches and deploy contexts**, enable **branch deploys** for `develop`. Add the DatoCMS webhook and the Netlify notification of step 10 for the staging URL too, or staging shows stale pages: staging has its own cache.
+4. **Migrations run on the sandbox first.** Run the new migration on `develop` and check staging:
+
+   ```sh
+   docker compose run --rm app npm run migrations:run -- --source=develop --in-place
+   ```
+
+5. **Release to primary.** Once the client approves, run the same migrations on a fresh fork of primary, and promote it from the dashboard (**Environments → Promote**), or run them on primary directly with `--source=main --in-place --allow-primary`. Then merge `develop` into `main`, and deploy.
+6. **Refresh the sandbox.** To start again from the content of production, delete the `develop` sandbox and fork primary again with the same name. Run the migrations that are not on primary yet.
+
+**Check:** the `develop` branch deploy shows the content of the `develop` sandbox. Change a Page title there: staging shows it, production doesn't.
 
 ## Ready
 
