@@ -2,6 +2,9 @@
 # Runs in the container on every start (postStartCommand).
 set -euo pipefail
 
+# Block the host and the local network before anything else runs.
+sudo /usr/local/sbin/init-firewall
+
 # Point this project's Claude memory at the host's, mounted on /mnt/claude-memory.
 # The workspace has the host's path, so the slug matches the host's.
 slug=$(pwd | sed 's/[^a-zA-Z0-9]/-/g')

@@ -18,3 +18,7 @@ slug=$(pwd | sed 's/[^a-zA-Z0-9]/-/g')
 memory="$HOME/.claude/projects/$slug/memory"
 mkdir -p "$memory"
 ln -sfn "$memory" .devcontainer/.claude-memory
+
+# Sources of the read-only mounts in devcontainer.json: a missing one stops
+# the container from starting.
+mkdir -p .claude/.cc-writes .vscode .idea

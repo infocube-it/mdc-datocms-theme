@@ -22,13 +22,29 @@
     "--env-file", "${localEnv:HOME}/.claude/devcontainer.env",
     // Chromium needs more shared memory than Docker's 64 MB default.
     "--shm-size=1gb",
-    "--init"
+    "--init",
+    // For init-firewall.sh, which only root runs. The remote user can't become root.
+    "--cap-add=NET_ADMIN"
   ],
   "mounts": [
     // Claude Code settings, login and transcripts survive container rebuilds.
     "source=claude-home-${devcontainerId},target=/home/ubuntu/.claude,type=volume",
     // The only host folder mounted besides the repository.
-    "source=${localWorkspaceFolder}/.devcontainer/.claude-memory,target=/mnt/claude-memory,type=bind"
+    "source=${localWorkspaceFolder}/.devcontainer/.claude-memory,target=/mnt/claude-memory,type=bind",
+
+    // Read-only: the files in the repository that something on the host runs or
+    // trusts (Dev Containers, docker compose, git, Claude Code, IDEs). From the
+    // container they can't be changed, only proposed. host-init.sh creates the
+    // missing ones, since a mount needs its source.
+    "source=${localWorkspaceFolder}/.devcontainer,target=${localWorkspaceFolder}/.devcontainer,type=bind,readonly",
+    "source=${localWorkspaceFolder}/compose.yaml,target=${localWorkspaceFolder}/compose.yaml,type=bind,readonly",
+    "source=${localWorkspaceFolder}/.git/config,target=${localWorkspaceFolder}/.git/config,type=bind,readonly",
+    "source=${localWorkspaceFolder}/.git/hooks,target=${localWorkspaceFolder}/.git/hooks,type=bind,readonly",
+    "source=${localWorkspaceFolder}/.claude,target=${localWorkspaceFolder}/.claude,type=bind,readonly",
+    // Claude Code writes here while it works.
+    "source=${localWorkspaceFolder}/.claude/.cc-writes,target=${localWorkspaceFolder}/.claude/.cc-writes,type=bind",
+    "source=${localWorkspaceFolder}/.vscode,target=${localWorkspaceFolder}/.vscode,type=bind,readonly",
+    "source=${localWorkspaceFolder}/.idea,target=${localWorkspaceFolder}/.idea,type=bind,readonly"
   ],
   "containerEnv": {
     "DEVCONTAINER": "true",
@@ -36,7 +52,8 @@
     "npm_config_cache": "${containerWorkspaceFolder}/.npm-cache"
   },
   "remoteEnv": {
-    // No host SSH agent: git push only works from the host.
+    // git push only works from the host. This only hides the host's SSH agent:
+    // VS Code still forwards its socket, see README.md.
     "SSH_AUTH_SOCK": ""
   },
   "postStartCommand": "bash .devcontainer/container-init.sh",
@@ -48,7 +65,13 @@
         "anthropic.claude-code",
         "bradlc.vscode-tailwindcss",
         "ms-playwright.playwright"
-      ]
+      ],
+      // The extension ignores defaultMode "bypassPermissions" from
+      // ~/.claude/settings.json unless these machine-scoped settings allow it.
+      "settings": {
+        "claudeCode.allowDangerouslySkipPermissions": true,
+        "claudeCode.initialPermissionMode": "bypassPermissions"
+      }
     }
   }
 }
