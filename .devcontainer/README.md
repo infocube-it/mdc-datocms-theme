@@ -31,6 +31,14 @@ The container gets no Docker socket and no other host folders. The remote user c
 
    Fill in `CLAUDE_CODE_OAUTH_TOKEN` with the token, and uncomment the `GIT_AUTHOR_*` and `GIT_COMMITTER_*` lines with your name and email. Without them, `git commit` fails in the container, where `.git/config` is read-only and `~/.gitconfig` isn't copied.
 
+   Optional: so the agent can check CI (`gh run list`, `gh run view --log-failed`, `gh run download`), fill in `GH_TOKEN` with a GitHub token. Without it, the agent can't read job logs or artifacts. Create a **fine-grained personal access token** (GitHub → Settings → Developer settings), with:
+   - Resource owner: the organization that owns the repository. If the organization requires approval, an owner must approve it.
+   - Repository access: only this repository.
+   - Permissions: **Actions: Read** (Metadata: Read is added automatically), nothing else.
+   - A short expiration, such as 90 days.
+
+   Everything in the container can read the token, so it must stay read-only: never give it write permissions.
+
 3. Add these to your **user** settings in VS Code on the host (**Preferences: Open User Settings (JSON)**). They must not live in the repository, where the container could change them.
 
    ```jsonc
