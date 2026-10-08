@@ -10,15 +10,15 @@ See `spec.md` (Cache and invalidation) and ADR-0002.
 
 **Blocked by:** 01 (Walking skeleton)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] CDA fetches use `force-cache` with a global tag. Tags stay within `[a-z0-9:_.-]`.
-- [ ] A webhook endpoint for DatoCMS `cda_cache_tags` verifies the request and revalidates the global tag with stale-while-revalidate semantics.
-- [ ] A rejected or failed webhook is logged once the logging adapter exists (ticket 03). Before that, it is a no-op hook.
-- [ ] Code deploys and deploy rollbacks start from a fully revalidated cache.
-- [ ] The deploy context → DatoCMS environment mapping is applied, and previews never read production content.
-- [ ] An environment variable selects the DatoCMS environment for every CDA read, draft mode included; unset means primary.
-- [ ] A staging Site (the `develop` branch deploy) reads the `develop` sandbox. The manual covers creating the sandbox, running migrations there first, giving the CDA token's role access to it, refreshing it from primary, and the release flow to primary.
-- [ ] The invalidation mode is a Site config setting, defaulting to `global`.
-- [ ] Vitest drives the webhook handler and asserts the recorded revalidation calls.
-- [ ] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.
+- [x] CDA fetches use `force-cache` with a global tag. Tags stay within `[a-z0-9:_.-]`.
+- [x] A webhook endpoint for DatoCMS `cda_cache_tags` verifies the request and revalidates the global tag with stale-while-revalidate semantics.
+- [x] A rejected or failed webhook is logged once the logging adapter exists (ticket 03). Before that, it is a no-op hook.
+- [x] Code deploys and deploy rollbacks start from a fully revalidated cache.
+- [x] The deploy context → DatoCMS environment mapping is applied, and previews never read production content.
+- [x] An environment variable selects the DatoCMS environment for every CDA read, draft mode included; unset means primary.
+- [x] A staging Site (the `develop` branch deploy) reads the `develop` sandbox. The manual covers creating the sandbox, running migrations there first, giving the CDA token's role access to it, refreshing it from primary, and the release flow to primary.
+- [x] The invalidation mode is a Site config setting, defaulting to `global`.
+- [x] Vitest drives the webhook handler and asserts the recorded revalidation calls.
+- [x] `docs/new-site.md` covers every setup step this ticket adds (tokens, secrets, environment variables, webhooks, external services, DatoCMS settings), or this ticket adds none.
