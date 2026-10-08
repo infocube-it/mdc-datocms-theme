@@ -2,6 +2,7 @@
  * Test helpers that are part of the Core's public interface. Not for
  * production code.
  */
+import type { IndexEntry, IndexStore } from '../cache/index-store';
 import type { ContentClient } from '../content/content-client';
 import { type LogEvent, type Logger, plainEvent } from '../logging/logger';
 
@@ -37,6 +38,26 @@ export function createFakeContentClient(fixtures: Record<string, Fixture>): Cont
       if (!fixture) throw new Error(`No fixture for query ${operationName ?? '(anonymous)'}`);
 
       return structuredClone(fixture(variables as Record<string, unknown>)) as never;
+    },
+  };
+}
+
+/** An index store kept in memory, standing in for Turso in tests. */
+export function createMemoryIndexStore(): IndexStore & { readonly entries: IndexEntry[] } {
+  const rows = new Map<string, IndexEntry>();
+  return {
+    get entries() {
+      return [...rows.values()];
+    },
+    async insert(entries) {
+      for (const entry of entries) rows.set(JSON.stringify([entry.cacheTag, entry.queryId]), entry);
+    },
+    async queryIdsFor(cacheTags) {
+      const wanted = new Set(cacheTags);
+      return [...new Set([...rows.values()].filter((row) => wanted.has(row.cacheTag)).map((row) => row.queryId))];
+    },
+    async wipe() {
+      rows.clear();
     },
   };
 }

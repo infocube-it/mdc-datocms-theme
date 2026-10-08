@@ -1,10 +1,13 @@
+import { purgeCache } from '@netlify/functions';
 import type { Metadata } from 'next';
 import { revalidateTag as nextRevalidateTag } from 'next/cache';
+import { after as nextAfter } from 'next/server';
 import {
   type CacheInvalidation,
   type CacheInvalidationOptions,
   createCacheInvalidation,
 } from './cache/invalidation';
+import { tursoIndexStoreFromEnv } from './cache/turso-index-store';
 import type { SiteConfig } from './config';
 import type { ContentClient } from './content/content-client';
 import { createDatoContentClient } from './content/dato-content-client';
@@ -42,9 +45,10 @@ export type Core = {
    */
   handleCacheTagsWebhook: CacheInvalidation['handleCacheTagsWebhook'];
   /**
-   * Revalidates the whole cache. Called by a Netlify deploy notification
-   * (signed with `CACHE_WEBHOOK_SECRET`) after a code deploy or a rollback, or
-   * by hand with the bearer secret.
+   * Revalidates the whole cache and wipes the query index. Called by a
+   * Netlify deploy notification (signed with `CACHE_WEBHOOK_SECRET`) after a
+   * code deploy or a rollback, by a DatoCMS webhook after an environment
+   * promotion, or by hand, both with the bearer secret.
    */
   handleCacheFlush: CacheInvalidation['handleCacheFlush'];
 };
@@ -54,10 +58,18 @@ export type CoreOptions = {
   contentClient?: ContentClient;
   /** Replaces Next.js's `revalidateTag`, e.g. with a recorder in tests. */
   revalidateTag?: CacheInvalidationOptions['revalidateTag'];
+  /** Replaces Netlify's `purgeCache`, e.g. with a recorder in tests. */
+  purgeCdn?: CacheInvalidationOptions['purgeCdn'];
+  /** Replaces Next.js's `after`, e.g. to run the scheduled work by hand in tests. */
+  after?: CacheInvalidationOptions['after'];
 };
 
 export function createCore(siteConfig: SiteConfig, options: CoreOptions = {}): Core {
-  const contentClient = options.contentClient ?? createDatoContentClient();
+  const indexStore =
+    siteConfig.invalidationMode === 'granular'
+      ? (siteConfig.indexStore ?? tursoIndexStoreFromEnv())
+      : undefined;
+  const contentClient = options.contentClient ?? createDatoContentClient({ indexStore });
   // The Web Previews plugin calls without the Editor's draft mode cookie, yet
   // new Pages must get their links before they are published.
   const draftContentClient =
@@ -66,6 +78,10 @@ export function createCore(siteConfig: SiteConfig, options: CoreOptions = {}): C
   const invalidation = createCacheInvalidation({
     logger,
     revalidateTag: options.revalidateTag ?? nextRevalidateTag,
+    // Outside Netlify (`next dev`, CI) there is no CDN to purge.
+    purgeCdn: options.purgeCdn ?? (async (tags) => (process.env.SITE_ID ? purgeCache({ tags }) : undefined)),
+    after: options.after ?? nextAfter,
+    indexStore,
   });
   const reportedLabelProblems = new Set<string>();
 

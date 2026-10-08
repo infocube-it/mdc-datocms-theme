@@ -1,3 +1,4 @@
+import type { IndexStore } from './cache/index-store';
 import type { LabelsByLocale } from './labels/labels';
 import type { Logger } from './logging/logger';
 import type { RoutableModel } from './routing/routable-model';
@@ -11,9 +12,15 @@ export type SiteConfig = {
   /**
    * How a publish refreshes the cache. `global` (the default) revalidates
    * every page on each publish; pages keep serving their previous version
-   * while they regenerate.
+   * while they regenerate. `granular` revalidates only the pages whose
+   * queries depend on the changed content, and needs an index store.
    */
-  invalidationMode?: 'global';
+  invalidationMode?: 'global' | 'granular';
+  /**
+   * Replaces the default index store of `granular` mode, Turso, which reads
+   * `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`.
+   */
+  indexStore?: IndexStore;
   /** Replaces the default logger, which writes to Netlify logs. */
   logger?: Logger;
   /** The Site's own Labels by locale: they extend the Seed's and win over them. */

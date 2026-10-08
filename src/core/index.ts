@@ -4,6 +4,8 @@
  * Core can later become an npm package without rewrites.
  */
 export { Breadcrumbs } from './breadcrumbs';
+export type { IndexEntry, IndexStore } from './cache/index-store';
+export { createTursoIndexStore, type TursoIndexStoreOptions } from './cache/turso-index-store';
 export { defineSiteConfig, type SiteConfig } from './config';
 export type { ContentClient } from './content/content-client';
 export { graphql, type ResultOf } from './content/graphql';

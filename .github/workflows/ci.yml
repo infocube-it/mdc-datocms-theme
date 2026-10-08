@@ -31,6 +31,9 @@ jobs:
       HOME: /tmp
       DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN: ${{ secrets.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN }}
       DRAFT_MODE_SECRET: ${{ secrets.DRAFT_MODE_SECRET }}
+      # Only for a Site in `granular` invalidation mode; unset otherwise.
+      TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+      TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v5
       - run: npm ci

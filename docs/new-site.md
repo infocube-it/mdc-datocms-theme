@@ -8,7 +8,7 @@ Follow these steps in order to turn a copy of the Seed into a new Site that buil
 
 Commands run from the repository root. Node, npm and Playwright run only in containers (see `AGENTS.md`); never run them on the host. The commands below use Docker Compose; in the Dev Container drop the `docker compose run --rm app` prefix, and run `npm run test:e2e:deploy` directly in step 8.
 
-> This manual grows with the Seed: every ticket that adds a setup step (a token, a secret, a webhook, an external service) updates it. Last updated for ticket 08.
+> This manual grows with the Seed: every ticket that adds a setup step (a token, a secret, a webhook, an external service) updates it. Last updated for ticket 09.
 
 ## Before you start
 
@@ -63,9 +63,9 @@ git push origin develop   # if the Seed has a develop branch; it is the working 
 cp .env.local.example .env.local
 ```
 
-Paste the two tokens from step 2 into `.env.local`. Also set `DRAFT_MODE_SECRET` and `CACHE_WEBHOOK_SECRET` to long random strings, e.g. the output of `openssl rand -hex 24`: the first protects draft mode and the preview links, the second the cache invalidation endpoints (step 10). Leave `DATOCMS_ENVIRONMENT` empty: the Site then reads primary. The file is ignored by git: never commit it, and never paste tokens into chats, issues or logs.
+Paste the two tokens from step 2 into `.env.local`. Also set `DRAFT_MODE_SECRET` and `CACHE_WEBHOOK_SECRET` to long random strings, e.g. the output of `openssl rand -hex 24`: the first protects draft mode and the preview links, the second the cache invalidation endpoints (step 10). Leave `DATOCMS_ENVIRONMENT` empty: the Site then reads primary. Leave `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` empty unless the Site uses granular invalidation (step 10). The file is ignored by git: never commit it, and never paste tokens into chats, issues or logs.
 
-**Check:** `.env.local` has a value for every variable in `.env.local.example`, except `DATOCMS_ENVIRONMENT`.
+**Check:** `.env.local` has a value for every variable in `.env.local.example`, except `DATOCMS_ENVIRONMENT` and the `TURSO_*` variables.
 
 ## 4. Install and set up the DatoCMS schema [agent]
 
@@ -95,7 +95,7 @@ The Home page is required: Site settings must point to one. The other sample Pag
 
 - `package.json`: set `name` to the Site's name.
 - `README.md`: replace the title and first paragraph with the Site's.
-- `src/site/config.ts`: the Site config. Leave it as it is until the Site needs to change something.
+- `src/site/config.ts`: the Site config. Leave it as it is until the Site needs to change something. A Site where a publish should regenerate only the pages it affects sets `invalidationMode: 'granular'` (step 10).
 - Routable models: the Seed ships one sample, Article (`src/site/models/article.tsx`). To add one, write a migration that creates the model (with a localized slug and an SEO field) and adds its API key to the `model` options of the Routing rule; declare it with `defineRoutableModel` and list it in `routableModels` in `src/site/config.ts`; then create its Routing rule in DatoCMS.
 - `src/site/labels/<locale>.ts`: one Labels file per locale. Add a file for each Site locale the Seed doesn't cover (it covers `it` and `en`), and list it in `labels` in `src/site/config.ts`. Without one, that locale shows default-locale Labels and logs a warning.
 
@@ -121,7 +121,7 @@ docker compose up app
 
 ## 7. Set up GitHub Actions [human]
 
-In the Site's repository, go to **Settings → Secrets and variables → Actions** and add two secrets: `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (the token from step 2) and `DRAFT_MODE_SECRET` (the value in `.env.local`). CI reads primary and never calls the cache endpoints.
+In the Site's repository, go to **Settings → Secrets and variables → Actions** and add two secrets: `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (the token from step 2) and `DRAFT_MODE_SECRET` (the value in `.env.local`). A Site in granular invalidation mode also needs `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` (step 10), or its build fails. CI reads primary and never calls the cache endpoints.
 
 The workflow `.github/workflows/ci.yml` runs on every PR and on pushes to `main` and `develop`. It runs typecheck and Vitest, then builds the Site and runs Playwright with axe against the build.
 
@@ -167,11 +167,23 @@ Pages are cached until DatoCMS tells the Site that content changed. After a publ
    - URL: `https://<deploy-url>/api/cache/datocms`
    - **HTTP basic auth**: off. **Custom headers**: `Authorization` = `Bearer <CACHE_WEBHOOK_SECRET>`.
    - **Events**: entity **Cache tags**, event **Invalidate**. Leave auto-retry on.
-2. **Netlify deploy notifications.** After a code deploy, or when someone rolls back to an older deploy (which brings back that deploy's old cache), the whole cache must be revalidated. In **Project configuration → Notifications → Deploy notifications → Add notification → Outgoing webhook**, add one for each of the events **Deploy succeeded** and **Deploy restored**, with:
+2. **Netlify deploy notifications.** After a code deploy, or when someone rolls back to an older deploy (which brings back that deploy's old cache), the whole cache must be revalidated. In **Project configuration → Notifications → Deploy notifications → Add notification → Outgoing webhook**, add one for each of the events **Deploy succeeded** and **Deploy restored** (the Site ignores the notifications of deploy previews), with:
    - URL: `https://<deploy-url>/api/cache/flush`
    - **JWS secret token**: `<CACHE_WEBHOOK_SECRET>`.
+3. **DatoCMS environment promotion.** Promoting a sandbox replaces primary whole, so the production Site must revalidate everything. In **Project settings → Webhooks → Add**, add a second webhook:
+   - URL: `https://<production-url>/api/cache/flush`
+   - **Custom headers**: `Authorization` = `Bearer <CACHE_WEBHOOK_SECRET>`.
+   - **Events**: entity **Environment**, event **Promote**.
 
-**Check:** publish a change to the Home page in DatoCMS. Reload `/<default-locale>` twice: the second load shows the change. In DatoCMS, the webhook's activity log shows a `200`. A request without the secret gets `401`:
+### Granular invalidation (optional)
+
+By default (`global` mode) every publish regenerates every page. In `granular` mode a publish regenerates only the pages whose content changed. The Site records which DatoCMS cache tags each query depends on, in an index kept in a Turso database. When the index can't answer, or a publish touches more than 200 queries, the Site falls back to regenerating everything. Each DatoCMS environment (primary, `sandbox`, `develop`) has its own index in the same database. The index is wiped together with every full revalidation (code deploy, rollback, promotion).
+
+1. **Turso.** Create an account on [turso.tech](https://turso.tech) and a database for the Site, e.g. `<site>-cache`, in the region closest to the Site's Netlify functions (by default AWS `us-east-2`). Copy its URL (`libsql://…`) and create a database token with read-write access. With the Turso CLI: `turso db create <site>-cache`, `turso db show --url <site>-cache`, `turso db tokens create <site>-cache`. The Site creates its table on first use.
+2. **Secrets.** Add `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to `.env.local`, to Netlify's **Environment variables** (all deploy contexts, with both the **Builds** and **Functions** scopes: the build writes to the index too) and to GitHub Actions' secrets (step 7).
+3. **Site config.** In `src/site/config.ts`, set `invalidationMode: 'granular'`. Commit, push and deploy.
+
+**Check:** publish a change to the Home page in DatoCMS. Reload `/<default-locale>` twice: the second load shows the change. In DatoCMS, the webhook's activity log shows a `200`. In granular mode, the Netlify function logs show no "revalidating everything" message for that publish, and the Turso database has rows in its `cache_tag_index` table. A request without the secret gets `401`:
 
 ```sh
 curl -i -X POST https://<deploy-url>/api/cache/datocms
@@ -183,7 +195,7 @@ Staging is the Netlify deploy of the `develop` branch. It reads a long-lived san
 
 1. **Create the sandbox.** In DatoCMS, **Project settings → Environments → Fork primary**, name it `develop`.
 2. **Give the tokens access.** In **Project settings → Roles**, make the role of the Content Delivery API token (`DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`) able to read the `develop` and `sandbox` environments (a role's environment access is per environment). Without it, staging and previews get 401s. For the sandbox-only role of step 2, add a **Records** rule for each of them as well.
-3. **Netlify.** In **Project configuration → Build & deploy → Branches and deploy contexts**, enable **branch deploys** for `develop`. Add the DatoCMS webhook and the Netlify notification of step 10 for the staging URL too, or staging shows stale pages: staging has its own cache.
+3. **Netlify.** In **Project configuration → Build & deploy → Branches and deploy contexts**, enable **branch deploys** for `develop`. Add the DatoCMS cache tags webhook and the Netlify notifications of step 10 for the staging URL too, or staging shows stale pages: staging has its own cache (and, in granular mode, its own index).
 4. **Migrations run on the sandbox first.** Run the new migration on `develop` and check staging:
 
    ```sh
