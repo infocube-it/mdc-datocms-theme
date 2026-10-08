@@ -23,12 +23,13 @@ The container gets no Docker socket and no other host folders. The remote user c
    claude setup-token
    ```
 
-2. Save it in `~/.claude/devcontainer.env`, readable only by you. Never commit the token or paste it into chats.
+2. Create `~/.claude/devcontainer.env` from the sample, readable only by you. It lives outside the repository: never commit it or paste the token into chats. `host-init.sh` creates it on the first start if it's missing.
 
    ```sh
-   printf 'CLAUDE_CODE_OAUTH_TOKEN=%s\n' '<token>' > ~/.claude/devcontainer.env
-   chmod 600 ~/.claude/devcontainer.env
+   install -m 600 .devcontainer/devcontainer.env.example ~/.claude/devcontainer.env
    ```
+
+   Fill in `CLAUDE_CODE_OAUTH_TOKEN` with the token, and uncomment the `GIT_AUTHOR_*` and `GIT_COMMITTER_*` lines with your name and email. Without them, `git commit` fails in the container, where `.git/config` is read-only and `~/.gitconfig` isn't copied.
 
 3. Add these to your **user** settings in VS Code on the host (**Preferences: Open User Settings (JSON)**). They must not live in the repository, where the container could change them.
 
@@ -55,7 +56,7 @@ The container gets no Docker socket and no other host folders. The remote user c
    - `DRAFT_MODE_SECRET`: a different value from the one in Netlify.
    - Production tokens stay in Netlify and GitHub only.
 
-6. Open the repository in VS Code and run **Dev Containers: Reopen in Container**. To change the token later, edit the file and run **Dev Containers: Rebuild Container**.
+6. Open the repository in VS Code and run **Dev Containers: Reopen in Container**. To change the token or the git identity later, edit `~/.claude/devcontainer.env` and run **Dev Containers: Rebuild Container**.
 
 If the Claude Code panel still asks you to log in, log in once from it: the login is kept in a Docker volume and survives rebuilds.
 
