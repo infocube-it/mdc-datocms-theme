@@ -52,7 +52,7 @@ The container gets no Docker socket and no other host folders. The remote user c
    - **X11**: prefer a Wayland session on the host, where the container only sees apps running through XWayland.
 
 5. In `.env.local`, use DatoCMS tokens that can't harm production. The container reads the file:
-   - `DATOCMS_CMA_TOKEN`: a token whose role has **Environments → Sandbox environments only**. Promote a sandbox to primary from the DatoCMS dashboard.
+   - `DATOCMS_CMA_TOKEN`: a token with the sandbox-only role described in `docs/new-site.md` (step 2): sandbox environments only, no token management, no promotion, and a record rule for each sandbox the agent works in. Promote a sandbox to primary from the DatoCMS dashboard.
    - `DRAFT_MODE_SECRET`: a different value from the one in Netlify.
    - Production tokens stay in Netlify and GitHub only.
 
