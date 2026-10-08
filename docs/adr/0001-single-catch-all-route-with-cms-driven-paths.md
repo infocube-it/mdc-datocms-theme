@@ -1,6 +1,6 @@
 # Single catch-all route with CMS-driven, localized Paths
 
-Every Site is multilingual with translated URLs (`/it/servizi/consulenza` and `/en/services/consulting` are the same record), so no URL segment can come from a Next.js folder name. We route everything through one `[locale]/[[...slug]]` route whose resolver asks DatoCMS which record owns the requested Path and renders that record's template by `__typename`. Every segment of every Path is therefore editable in DatoCMS, and Editors can translate or move a section without a code change.
+Every Site is multilingual with translated URLs (`/it/servizi/consulenza` and `/en/services/consulting` are the same record), so no URL segment can come from a Next.js folder name. We route everything through one `[locale]/[[...slug]]` route whose resolver asks DatoCMS which record owns the requested Path and renders that record with its model's template. Every segment of every Path is therefore editable in DatoCMS, and Editors can translate or move a section without a code change.
 
 ## Considered Options
 

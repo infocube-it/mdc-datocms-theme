@@ -55,7 +55,7 @@ The per-model setting, kept in DatoCMS, that names a Routable model's Main page 
 _Avoid_: Route config, permalink pattern, model mapping
 
 **Path**:
-The localized URL of a record. A Page's Path follows the Page tree; other Routable models' Paths follow their own pattern, independent of their Main page.
+The localized URL of a record. A Page's Path follows the Page tree; other Routable models' Paths follow their Routing rule's prefix, or their Main page's Path when the prefix is empty.
 _Avoid_: Permalink, route, URL slug
 
 **Listing**:

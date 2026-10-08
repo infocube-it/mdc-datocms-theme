@@ -5,7 +5,6 @@ import { createDatoContentClient } from './content/dato-content-client';
 import { type Labels, labelsFor } from './labels/labels';
 import type { Logger } from './logging/logger';
 import { createNetlifyLogger } from './logging/netlify-logger';
-import { recordMetadata } from './metadata';
 import { isDraftModeSecret, pathOnThisSite } from './preview/draft-mode';
 import { type PreviewLink, type PreviewLinksRequest, previewLinks } from './preview/preview-links';
 import type { Redirect } from './routing/redirect';
@@ -50,10 +49,9 @@ export function createCore(siteConfig: SiteConfig, options: CoreOptions = {}): C
   return {
     siteConfig,
     logger,
-    resolvePath: (request) => resolvePath(contentClient, request),
+    resolvePath: (request) => resolvePath(contentClient, siteConfig.routableModels ?? [], request),
     rootRedirect: (acceptLanguage) => rootRedirect(contentClient, acceptLanguage),
-    metadataFor: (resolution) =>
-      resolution.kind === 'record' ? recordMetadata(resolution.record) : {},
+    metadataFor: (resolution) => (resolution.kind === 'record' ? resolution.record.metadata : {}),
     labelsFor: (locale) =>
       labelsFor(
         { contentClient, logger, siteLabels: siteConfig.labels, reported: reportedLabelProblems },

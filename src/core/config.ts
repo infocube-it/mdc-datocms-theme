@@ -1,5 +1,6 @@
 import type { LabelsByLocale } from './labels/labels';
 import type { Logger } from './logging/logger';
+import type { RoutableModel } from './routing/routable-model';
 
 /**
  * The developer-owned choices of a Site, kept in its code and read by the
@@ -11,6 +12,12 @@ export type SiteConfig = {
   logger?: Logger;
   /** The Site's own Labels by locale: they extend the Seed's and win over them. */
   labels?: LabelsByLocale;
+  /**
+   * The Routable models other than Page, each given its Paths by a Routing
+   * rule in DatoCMS. When records of several models claim the same Path, the
+   * first model in this list wins.
+   */
+  routableModels?: RoutableModel[];
 };
 
 export function defineSiteConfig(config: SiteConfig): SiteConfig {

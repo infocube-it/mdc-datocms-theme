@@ -16,6 +16,7 @@ const PageTreeQuery = graphql(`
     ) {
       id
       slug
+      title
       parent {
         id
       }
@@ -26,7 +27,7 @@ const PageTreeQuery = graphql(`
   }
 `);
 
-/** Every Page translated into `locale`, with its parent, in all its batches. */
+/** Every Page translated into `locale`, with its parent and title, in all its batches. */
 export async function loadPageTree(
   contentClient: ContentClient,
   locale: SiteLocale,
@@ -44,7 +45,12 @@ export async function loadPageTree(
 
     count = _allPagesMeta.count;
     entries.push(
-      ...allPages.map((page) => ({ id: page.id, slug: page.slug, parentId: page.parent?.id ?? null })),
+      ...allPages.map((page) => ({
+        id: page.id,
+        slug: page.slug,
+        title: page.title,
+        parentId: page.parent?.id ?? null,
+      })),
     );
   }
 

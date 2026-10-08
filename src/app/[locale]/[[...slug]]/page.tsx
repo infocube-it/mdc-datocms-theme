@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound, permanentRedirect, redirect } from 'next/navigation';
 import { cache } from 'react';
-import { RecordView } from '@/core';
+import { Breadcrumbs, RecordView } from '@/core';
 import { core } from '@/site/core';
 
 type Props = PageProps<'/[locale]/[[...slug]]'>;
@@ -30,5 +30,11 @@ export default async function CatchAllPage({ params }: Props) {
     redirect(resolution.destination);
   }
 
-  return <RecordView record={resolution.record} />;
+  const label = await core.labelsFor((await params).locale);
+  return (
+    <>
+      <Breadcrumbs items={resolution.breadcrumbs} label={label('breadcrumb')} />
+      <RecordView record={resolution.record} />
+    </>
+  );
 }

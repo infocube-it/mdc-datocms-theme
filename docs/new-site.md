@@ -8,7 +8,7 @@ Follow these steps in order to turn a copy of the Seed into a new Site that buil
 
 Commands run from the repository root. Node, npm and Playwright run only in containers (see `AGENTS.md`); never run them on the host. The commands below use Docker Compose; in the Dev Container drop the `docker compose run --rm app` prefix, and run `npm run test:e2e:deploy` directly in step 8.
 
-> This manual grows with the Seed: every ticket that adds a setup step (a token, a secret, a webhook, an external service) updates it. Last updated for ticket 04.
+> This manual grows with the Seed: every ticket that adds a setup step (a token, a secret, a webhook, an external service) updates it. Last updated for ticket 05.
 
 ## Before you start
 
@@ -81,7 +81,9 @@ They create:
 
 - the Page model, a tree with localized slugs;
 - the Site settings singleton;
-- sample Pages: a Home page, a small tree under "Servizi / Services", and a Page with an unpublished draft, used to test draft mode.
+- sample Pages: a Home page, a small tree under "Servizi / Services", and a Page with an unpublished draft, used to test draft mode;
+- the Routing rule model, which gives the records of each Routable model other than Page their Paths;
+- a sample Routable model, Article, with its Routing rule (prefix `articolo` / `article`, Main page "Articoli / Articles") and two sample articles.
 
 The Home page is required: Site settings must point to one. The other sample Pages are used by the Playwright tests (see step 8); delete them only once the Site has its own tests.
 
@@ -94,6 +96,7 @@ The Home page is required: Site settings must point to one. The other sample Pag
 - `package.json`: set `name` to the Site's name.
 - `README.md`: replace the title and first paragraph with the Site's.
 - `src/site/config.ts`: the Site config. Leave it as it is until the Site needs to change something.
+- Routable models: the Seed ships one sample, Article (`src/site/models/article.tsx`). To add one, write a migration that creates the model (with a localized slug and an SEO field) and adds its API key to the `model` options of the Routing rule; declare it with `defineRoutableModel` and list it in `routableModels` in `src/site/config.ts`; then create its Routing rule in DatoCMS.
 - `src/site/labels/<locale>.ts`: one Labels file per locale. Add a file for each Site locale the Seed doesn't cover (it covers `it` and `en`), and list it in `labels` in `src/site/config.ts`. Without one, that locale shows default-locale Labels and logs a warning.
 
 **Check:** run the checks:
